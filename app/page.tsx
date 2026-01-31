@@ -1,8 +1,10 @@
-import MapComponent from '../component/map';
+import MapComponent from '../component/CityMap';
 
 const page = () => {
   return (
-    <MapComponent />
+    <div>
+      <MapComponent />
+    </div>
   )
 }
 
