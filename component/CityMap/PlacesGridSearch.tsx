@@ -2,13 +2,14 @@
 
 import { use, useEffect } from 'react';
 import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import { isPointInPolygon } from '@/utility/validator';
 
 const PlacesGridSearch = () => {
   const map = useMap();
   const placesLib = useMapsLibrary('places');
   
   const searchGrid = [
-    { lat: 14.329163, lng: 121.042645, radius: 500 },
+    { lat: 14.329163, lng: 121.042645, radius: 500, useValidator: true },
   ];
 
   useEffect(() => {
@@ -42,36 +43,30 @@ const PlacesGridSearch = () => {
             ],
           });
 
-          allPlaces.push(...response.places);
+          const filteredPlaces = response.places
+            .filter(place => {
+              if (!place.location) return false;
+              if (!point.useValidator) return true;
+              return isPointInPolygon({
+                lat: place.location.lat(),
+                lng: place.location.lng()
+              });
+            })
+            .map(place => ({
+              name: place.displayName,
+              location: place.location,
+              types: place.types,
+              rating: place.rating,
+              userRatingCount: place.userRatingCount,
+            }));
+
+          allPlaces.push(...filteredPlaces);
+
+          console.log(filteredPlaces);
         } catch (error) {
           console.error('Places search failed:', error);
         }
       }
-
-      // Remove duplicates and sort by popularity
-      const uniquePlaces = allPlaces.filter((place, index, self) => 
-        index === self.findIndex(p => p.id === place.id)
-      );
-
-      const sortedPlaces = uniquePlaces
-        .filter(place => place.rating && place.userRatingCount && place.location)
-        .sort((a, b) => {
-          const scoreA = (a.rating || 0) * Math.log(a.userRatingCount || 1);
-          const scoreB = (b.rating || 0) * Math.log(b.userRatingCount || 1);
-          return scoreB - scoreA;
-        })
-        .slice(0, 20);
-
-      const circleData = sortedPlaces.map(place => ({
-        lat: place.location!.lat(),
-        lng: place.location!.lng(),
-        name: place.displayName,
-        rating: place.rating || "No Rating",
-        userRatingCount: place.userRatingCount || 0,
-        types: place.types || [],
-      }));
-
-      console.log('Places search results:', circleData);
     })();
   }, [map, placesLib]);
 
