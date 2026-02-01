@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { isPointInPolygon } from '@/utility/validator';
 
@@ -9,7 +9,7 @@ const PlacesGridSearch = () => {
   const placesLib = useMapsLibrary('places');
   
   const searchGrid = [
-    { lat: 14.329163, lng: 121.042645, radius: 500, useValidator: true },
+    { lat: 14.329352, lng: 121.041579, radius: 500, useValidator: true }
   ];
 
   useEffect(() => {
@@ -41,6 +41,7 @@ const PlacesGridSearch = () => {
               'rating',
               'userRatingCount',
             ],
+            rankPreference: google.maps.places.SearchNearbyRankPreference.POPULARITY,
           });
 
           const filteredPlaces = response.places

@@ -7,6 +7,7 @@ interface CircleData {
   lat: number;
   lng: number;
   radius: number;
+  useValidator: boolean;
 }
 
 const CircleDrawer = () => {
@@ -14,9 +15,7 @@ const CircleDrawer = () => {
   
   // circle data
   const circles: CircleData[] = [
-    { lat: 14.329163, lng: 121.042645, radius: 500 },
-    { lat: 14.333255, lng: 121.050816, radius: 500 },
-    
+    { lat: 14.329352, lng: 121.041579, radius: 500, useValidator: true },
   ];
 
 
