@@ -2,8 +2,6 @@
 
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import CityPolygon from './CityMap/cityPolygon';
-import CircleDrawer from './CityMap/CircleDrawer';
-import PlacesGridSearch from './CityMap/PlacesGridSearch';
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
@@ -28,8 +26,6 @@ const MapComponent = () => (
       style={{ width: '100%', height: '100vh' }}
     >
       <CityPolygon />
-      <CircleDrawer />
-      <PlacesGridSearch />
     </Map>
   </APIProvider>
 );

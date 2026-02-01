@@ -53,13 +53,6 @@ const PlacesGridSearch = () => {
                 lng: place.location.lng()
               });
             })
-            .map(place => ({
-              name: place.displayName,
-              location: place.location,
-              types: place.types,
-              rating: place.rating,
-              userRatingCount: place.userRatingCount,
-            }));
 
           allPlaces.push(...filteredPlaces);
 
