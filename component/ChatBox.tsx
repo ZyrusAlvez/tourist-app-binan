@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ChatService, ChatMessage } from '@/services/chatService';
 
 interface Message {
   id: string;
@@ -19,9 +20,10 @@ const ChatBox = () => {
     }
   ]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
+  const sendMessage = async () => {
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -32,17 +34,37 @@ const ChatBox = () => {
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      const chatMessages: ChatMessage[] = messages.map(msg => ({
+        role: msg.isUser ? 'user' : 'assistant',
+        content: msg.text
+      }));
+      
+      chatMessages.push({ role: 'user', content: input });
+
+      const response = await ChatService.sendMessage(chatMessages);
+      
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: 'I found some places for you! Check the map for results.',
+        text: response,
         isUser: false,
         timestamp: new Date()
       };
+      
       setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Sorry, there was an error. Please try again.',
+        isUser: false,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -91,9 +113,12 @@ const ChatBox = () => {
           />
           <button
             onClick={sendMessage}
-            className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            disabled={isLoading}
+            className={`px-6 py-2 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
+              isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+            }`}
           >
-            Send
+            {isLoading ? 'Sending...' : 'Send'}
           </button>
         </div>
       </div>
