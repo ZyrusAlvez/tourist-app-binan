@@ -120,7 +120,14 @@ export class SearchService {
       });
 
       const places = response.places
-        ?.map(place => ({
+        ?.filter(place => {
+          if (!place.location) return false;
+          return isPointInPolygon({
+            lat: place.location.lat(),
+            lng: place.location.lng()
+          });
+        })
+        .map(place => ({
           id: place.id!,
           displayName: place.displayName || '',
           location: {
