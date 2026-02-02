@@ -15,7 +15,8 @@ const CircleDrawer = () => {
   
   // circle data
   const circles: CircleData[] = [
-    { lat: 14.329352, lng: 121.041579, radius: 500, useValidator: true },
+    { lat: 14.334475, lng: 121.075635, radius: 4000, useValidator: true },
+    { lat: 14.276063, lng: 121.058724, radius: 4000, useValidator: true },
   ];
 
 

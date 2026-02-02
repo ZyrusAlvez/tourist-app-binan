@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChatService, ChatMessage } from '@/services/chatService';
+import { ChatService } from '@/services/chatService';
 
 interface Message {
   id: string;
@@ -14,7 +14,7 @@ const ChatBox = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I can help you find places in Binan. What are you looking for?',
+      text: 'Hello! I can help you find places in Binan. Are you a tourist or a local?',
       isUser: false,
       timestamp: new Date()
     }
@@ -37,14 +37,7 @@ const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      const chatMessages: ChatMessage[] = messages.map(msg => ({
-        role: msg.isUser ? 'user' : 'assistant',
-        content: msg.text
-      }));
-      
-      chatMessages.push({ role: 'user', content: input });
-
-      const response = await ChatService.sendMessage(chatMessages);
+      const response = await ChatService.processMessage(input);
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
