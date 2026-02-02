@@ -90,7 +90,10 @@ export class SearchService {
     userLocation?: { lat: number; lng: number },
     radius: number = 1000
   ): Promise<SearchResponse> {
+    console.log('searchNearPlaces called with:', { includedTypes, userLocation, radius });
+    
     if (!userLocation) {
+      console.log('No user location provided');
       return {
         places: [],
         message: "I need your location to find nearby places. Please allow location access.",
@@ -99,15 +102,18 @@ export class SearchService {
     }
 
     if (typeof window === 'undefined' || !window.google?.maps?.places?.Place) {
+      console.log('Google Maps not available for nearby search');
       return {
         places: [],
         message: "Google Maps is loading. Please try again in a moment."
       };
     }
 
+    console.log('Starting nearby search...');
     const allPlaces: SearchResult[] = [];
 
     try {
+      console.log('Making Google Places API call...');
       const response = await window.google.maps.places.Place.searchNearby({
         locationRestriction: {
           center: { lat: userLocation.lat, lng: userLocation.lng },
@@ -118,6 +124,8 @@ export class SearchService {
         fields: ['id', 'displayName', 'location', 'types', 'rating', 'userRatingCount'],
         rankPreference: window.google.maps.places.SearchNearbyRankPreference.DISTANCE,
       });
+
+      console.log('Google Places API response:', response);
 
       const places = response.places
         ?.filter(place => {
@@ -139,11 +147,13 @@ export class SearchService {
           userRatingCount: place.userRatingCount || undefined
         })) || [];
 
+      console.log('Filtered places:', places.length);
       allPlaces.push(...places);
     } catch (error) {
       console.error('Nearby search failed:', error);
     }
 
+    console.log('Returning nearby search results:', allPlaces.length);
     return {
       places: allPlaces,
       message: `Found ${allPlaces.length} ${includedTypes.join(', ')} nearby`
