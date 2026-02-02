@@ -31,13 +31,12 @@ const PLACE_TYPES = [
 ];
 
 export class IntentService {
-  static async identifyIntent(userMessage: string): Promise<SearchIntent> {
+  static async identifyIntent(userMessage: string, conversationHistory?: any[]): Promise<SearchIntent> {
     try {
-      const completion = await groq.chat.completions.create({
-        messages: [
-          {
-            role: 'system',
-            content: `You are an intent classifier for a Binan, Laguna tourism app. Analyze user messages and return ONLY a JSON object with this structure:
+      const messages = [
+        {
+          role: 'system',
+          content: `You are an intent classifier for a Binan, Laguna tourism app. Analyze user messages and return ONLY a JSON object with this structure:
 
 {
   "type": "search_places" | "chat" | "clarification",
@@ -59,6 +58,8 @@ Rules:
 
 CRITICAL: For includedTypes, you can ONLY choose from the exact list above. If user asks for something not in the list, use "clarification" type instead.
 
+CONTEXT AWARENESS: Use conversation history to understand what the user is referring to. If they say "near me" after discussing restaurants, assume they want restaurants nearby.
+
 Common mappings (USE EXACT STRINGS FROM LIST):
 - "restaurant", "resto", "food", "dining" → ["restaurant"]
 - "hotel", "accommodation", "stay" → ["lodging"]
@@ -73,13 +74,18 @@ Common mappings (USE EXACT STRINGS FROM LIST):
 Examples:
 "find nearby restaurants" → {"type":"search_places","nearby":true,"includedTypes":["restaurant"],"radius":1000,"confidence":0.9}
 "hotels in binan" → {"type":"search_places","nearby":false,"includedTypes":["lodging"],"confidence":0.95}
-"what's good to eat here?" → {"type":"chat","nearby":false,"confidence":0.8}`
-          },
-          {
-            role: 'user',
-            content: userMessage
-          }
-        ],
+"what's good to eat here?" → {"type":"chat","nearby":false,"confidence":0.8}
+"near me" (after discussing restaurants) → {"type":"search_places","nearby":true,"includedTypes":["restaurant"],"radius":1000,"confidence":0.8}`
+        },
+        ...(conversationHistory ? conversationHistory.slice(-4) : []), // Last 4 messages for context
+        {
+          role: 'user',
+          content: userMessage
+        }
+      ];
+
+      const completion = await groq.chat.completions.create({
+        messages,
         model: 'llama-3.3-70b-versatile',
         temperature: 0.1,
         max_tokens: 200,

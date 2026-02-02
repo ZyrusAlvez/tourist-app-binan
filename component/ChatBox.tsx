@@ -83,7 +83,12 @@ const ChatBox = () => {
         if (pendingSearchRef.current) {
           console.log('Retrying search with location:', pendingSearchRef.current, newLocation);
           try {
-            const response: ChatResponse = await ChatService.processMessage(pendingSearchRef.current, newLocation);
+            const currentConversationHistory = messages.slice(1).map(msg => ({
+              role: msg.isUser ? 'user' as const : 'assistant' as const,
+              content: msg.text
+            }));
+            
+            const response: ChatResponse = await ChatService.processMessage(pendingSearchRef.current, newLocation, currentConversationHistory);
             console.log('Search completed:', response);
             // Remove typing indicator and add response
             setMessages(prev => {
@@ -162,7 +167,12 @@ const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      const response: ChatResponse = await ChatService.processMessage(input, userLocation);
+      const conversationHistory = messages.slice(1).map(msg => ({
+        role: msg.isUser ? 'user' as const : 'assistant' as const,
+        content: msg.text
+      }));
+      
+      const response: ChatResponse = await ChatService.processMessage(input, userLocation, conversationHistory);
       console.log('Chat response:', response);
       
       if (response.requiresLocation) {

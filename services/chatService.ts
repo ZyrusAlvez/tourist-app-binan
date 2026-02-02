@@ -39,10 +39,11 @@ export class ChatService {
 
   static async processMessage(
     userMessage: string, 
-    userLocation?: { lat: number; lng: number }
+    userLocation?: { lat: number; lng: number },
+    conversationHistory?: ChatMessage[]
   ): Promise<ChatResponse> {
     try {
-      const intent = await IntentService.identifyIntent(userMessage);
+      const intent = await IntentService.identifyIntent(userMessage, conversationHistory);
       console.log('Detected intent:', intent);
       
       if (intent.type === 'clarification') {
@@ -77,9 +78,13 @@ export class ChatService {
         };
       }
 
-      // Default chat response
+      // Default chat response with conversation history
       console.log('Using default chat response for intent:', intent.type);
-      const chatResponse = await this.sendMessage([{ role: 'user', content: userMessage }]);
+      const messages: ChatMessage[] = [
+        ...(conversationHistory ? conversationHistory.slice(-6) : []), // Last 6 messages for context
+        { role: 'user', content: userMessage }
+      ];
+      const chatResponse = await this.sendMessage(messages);
       return {
         message: chatResponse,
         intent
