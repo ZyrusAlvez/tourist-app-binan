@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ChatService } from '@/services/chatService';
+import { ChatService, ChatResponse } from '@/services/chatService';
+import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
 interface Message {
   id: string;
@@ -14,13 +15,17 @@ const ChatBox = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I can help you find places in Binan. Are you a tourist or a local?',
+      text: 'Hello! I can help you find places in Binan.',
       isUser: false,
       timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Wait for Google Maps to load
+  const placesLib = useMapsLibrary('places');
+  const isGoogleMapsReady = placesLib && window.google?.maps?.places?.Place;
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -37,11 +42,11 @@ const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      const response = await ChatService.processMessage(input);
+      const response: ChatResponse = await ChatService.processMessage(input);
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: response,
+        text: response.message,
         isUser: false,
         timestamp: new Date()
       };

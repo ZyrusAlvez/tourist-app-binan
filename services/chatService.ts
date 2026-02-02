@@ -1,8 +1,17 @@
 import groq from '@/lib/groq';
+import { IntentService, SearchIntent } from './intentService';
+import { SearchService, SearchResponse } from './searchService';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+export interface ChatResponse {
+  message: string;
+  searchResults?: SearchResponse;
+  requiresLocation?: boolean;
+  intent: SearchIntent;
 }
 
 export class ChatService {
@@ -25,6 +34,62 @@ export class ChatService {
     } catch (error) {
       console.error('Chat service error:', error);
       return 'Sorry, there was an error processing your request. Please try again.';
+    }
+  }
+
+  static async processMessage(
+    userMessage: string, 
+    userLocation?: { lat: number; lng: number }
+  ): Promise<ChatResponse> {
+    try {
+      const intent = await IntentService.identifyIntent(userMessage);
+      console.log('Detected intent:', intent);
+      
+      if (intent.type === 'clarification') {
+        return {
+          message: intent.clarificationQuestion || 'Could you please clarify what you\'re looking for?',
+          intent
+        };
+      }
+
+      if (intent.type === 'search_places' && intent.includedTypes) {
+        console.log('Running places search...', intent.includedTypes);
+        const searchResults = intent.nearby 
+          ? await SearchService.searchNearPlaces(intent.includedTypes, userLocation, intent.radius)
+          : await SearchService.searchAllPlaces(intent.includedTypes);
+        
+        if (searchResults.requiresLocation) {
+          return {
+            message: searchResults.message,
+            requiresLocation: true,
+            intent
+          };
+        }
+
+        const chatResponse = await this.sendMessage([
+          { role: 'user', content: `Generate a friendly response for search results: ${intent.includedTypes.join(', ')} in ${intent.nearby ? 'nearby area' : 'Binan city'}. Keep it conversational.` }
+        ]);
+        
+        return {
+          message: chatResponse,
+          searchResults,
+          intent
+        };
+      }
+
+      // Default chat response
+      console.log('Using default chat response for intent:', intent.type);
+      const chatResponse = await this.sendMessage([{ role: 'user', content: userMessage }]);
+      return {
+        message: chatResponse,
+        intent
+      };
+    } catch (error) {
+      console.error('Process message error:', error);
+      return {
+        message: 'Sorry, there was an error processing your request. Please try again.',
+        intent: { type: 'clarification', nearby: false, confidence: 0.1 }
+      };
     }
   }
 }
