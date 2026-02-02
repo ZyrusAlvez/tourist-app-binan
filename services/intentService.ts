@@ -53,9 +53,22 @@ Rules:
 - "chat": for general questions, recommendations, or information about places/city
 - "clarification": when intent is unclear, include clarificationQuestion
 - "nearby": true if user mentions "nearby", "near me", "close", etc.
-- "includedTypes": map user intent to these exact types: ${PLACE_TYPES.slice(0, 20).join(', ')}... (use relevant ones)
+- "includedTypes": YOU MUST ONLY USE THESE EXACT STRINGS: ${PLACE_TYPES.join(', ')}. DO NOT CREATE NEW TYPES. DO NOT USE VARIATIONS.
 - "radius": default 1000 for nearby searches
 - "confidence": how confident you are (0.1-1.0)
+
+CRITICAL: For includedTypes, you can ONLY choose from the exact list above. If user asks for something not in the list, use "clarification" type instead.
+
+Common mappings (USE EXACT STRINGS FROM LIST):
+- "restaurant", "resto", "food", "dining" → ["restaurant"]
+- "hotel", "accommodation", "stay" → ["lodging"]
+- "cafe", "coffee shop", "coffee" → ["cafe"]
+- "attraction", "tourist spot", "sightseeing" → ["tourist_attraction"]
+- "park", "garden" → ["park"]
+- "museum" → ["museum"]
+- "gas station", "fuel" → ["gas_station"]
+- "store", "shop" → ["store"]
+- "water station", "water refill" → USE "clarification" (not available)
 
 Examples:
 "find nearby restaurants" → {"type":"search_places","nearby":true,"includedTypes":["restaurant"],"radius":1000,"confidence":0.9}
