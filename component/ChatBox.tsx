@@ -23,7 +23,7 @@ const ChatBox = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>();
-  const pendingSearchRef = useRef<string>();
+  const pendingSearchRef = useRef<string | undefined>(undefined);
   
   // Wait for Google Maps to load
   const placesLib = useMapsLibrary('places');
