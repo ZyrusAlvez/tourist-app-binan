@@ -22,6 +22,10 @@ const MapComponent = () => (
       minZoom={11}
       maxZoom={21}
       style={{ width: '100%', height: '100vh' }}
+      styles={[
+        { featureType: 'transit', elementType: 'all', stylers: [{ visibility: 'off' }] },
+        { featureType: 'poi', elementType: 'all', stylers: [{ visibility: 'off' }] },
+      ]}
     >
       <CityPolygon />
     </Map>
