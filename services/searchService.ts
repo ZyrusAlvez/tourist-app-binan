@@ -22,8 +22,6 @@ const CITY_GRID = [
 
 export class SearchService {
   static async searchAllPlaces(includedTypes: string[]): Promise<SearchResponse> {
-    console.log('searchAllPlaces called with:', includedTypes);
-    
     if (typeof window === 'undefined' || !window.google?.maps?.places?.Place) {
       console.log('Google Maps not available');
       return {
@@ -32,11 +30,9 @@ export class SearchService {
       };
     }
 
-    console.log('Google Maps available, starting search...');
     const allPlaces: SearchResult[] = [];
 
     for (const point of CITY_GRID) {
-      console.log('Searching point:', point);
       try {
         const response = await window.google.maps.places.Place.searchNearby({
           locationRestriction: {
@@ -49,7 +45,6 @@ export class SearchService {
           rankPreference: window.google.maps.places.SearchNearbyRankPreference.POPULARITY,
         });
 
-        console.log('Search response:', response);
 
         const filteredPlaces = response.places
           ?.filter(place => {
@@ -71,14 +66,14 @@ export class SearchService {
             userRatingCount: place.userRatingCount || undefined
           })) || [];
 
-        console.log('Filtered places:', filteredPlaces.length);
         allPlaces.push(...filteredPlaces);
       } catch (error) {
         console.error('Places search failed for point:', point, error);
       }
     }
 
-    console.log('Total places found:', allPlaces.length);
+    console.log(allPlaces);
+    allPlaces.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     return {
       places: allPlaces,
       message: `Found ${allPlaces.length} ${includedTypes.join(', ')} in Binan`
@@ -154,6 +149,7 @@ export class SearchService {
     }
 
     console.log('Returning nearby search results:', allPlaces.length);
+    allPlaces.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     return {
       places: allPlaces,
       message: `Found ${allPlaces.length} ${includedTypes.join(', ')} nearby`
