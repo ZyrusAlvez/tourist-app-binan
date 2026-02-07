@@ -21,13 +21,10 @@ const CITY_GRID = [
 ];
 
 export class SearchService {
-  static async searchAllPlaces(includedTypes: string[]): Promise<SearchResponse> {
+  static async searchAllPlaces(includedTypes: string[]): Promise<SearchResult[]> {
     if (typeof window === 'undefined' || !window.google?.maps?.places?.Place) {
       console.log('Google Maps not available');
-      return {
-        places: [],
-        message: "Google Maps is loading. Please try again in a moment."
-      };
+      return [];
     }
 
     const allPlaces: SearchResult[] = [];
@@ -74,34 +71,24 @@ export class SearchService {
 
     console.log(allPlaces);
     allPlaces.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    return {
-      places: allPlaces,
-      message: `Found ${allPlaces.length} ${includedTypes.join(', ')} in Binan`
-    };
+    return allPlaces
   }
 
   static async searchNearPlaces(
     includedTypes: string[],
     userLocation?: { lat: number; lng: number },
     radius: number = 1000
-  ): Promise<SearchResponse> {
+  ): Promise<SearchResult[]> {
     console.log('searchNearPlaces called with:', { includedTypes, userLocation, radius });
     
     if (!userLocation) {
       console.log('No user location provided');
-      return {
-        places: [],
-        message: "I need your location to find nearby places. Please allow location access.",
-        requiresLocation: true
-      };
+      return [];
     }
 
     if (typeof window === 'undefined' || !window.google?.maps?.places?.Place) {
       console.log('Google Maps not available for nearby search');
-      return {
-        places: [],
-        message: "Google Maps is loading. Please try again in a moment."
-      };
+      return [];
     }
 
     console.log('Starting nearby search...');
@@ -150,9 +137,6 @@ export class SearchService {
 
     console.log('Returning nearby search results:', allPlaces.length);
     allPlaces.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    return {
-      places: allPlaces,
-      message: `Found ${allPlaces.length} ${includedTypes.join(', ')} nearby`
-    };
+    return allPlaces;
   }
 }

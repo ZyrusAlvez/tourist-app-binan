@@ -55,25 +55,17 @@ export class ChatService {
 
       if (intent.type === 'search_places' && intent.includedTypes) {
         console.log('Running places search...', intent.includedTypes);
-        const searchResults = intent.nearby 
+        const places = intent.nearby 
           ? await SearchService.searchNearPlaces(intent.includedTypes, userLocation, intent.radius)
           : await SearchService.searchAllPlaces(intent.includedTypes);
         
-        if (searchResults.requiresLocation) {
-          return {
-            message: searchResults.message,
-            requiresLocation: true,
-            intent
-          };
-        }
-
         const chatResponse = await this.sendMessage([
-          { role: 'user', content: `Generate a friendly response for search results: ${intent.includedTypes.join(', ')} in ${intent.nearby ? 'nearby area' : 'Binan city'}. Keep it conversational.` }
+          { role: 'user', content: `I found ${places.length} ${intent.includedTypes.join(', ')} in ${intent.nearby ? 'nearby area' : 'Binan city'}. Generate a friendly, conversational response about these results.` }
         ]);
         
         return {
           message: chatResponse,
-          searchResults,
+          searchResults: { places, message: `Found ${places.length} places` },
           intent
         };
       }
