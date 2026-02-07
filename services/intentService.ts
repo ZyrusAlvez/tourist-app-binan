@@ -30,13 +30,12 @@ const PLACE_TYPES = [
   'train_station', 'transit_station', 'travel_agency', 'university', 'veterinary_care', 'zoo'
 ];
 
-export class IntentService {
-  static async identifyIntent(userMessage: string, conversationHistory?: any[]): Promise<SearchIntent> {
-    try {
-      const messages = [
-        {
-          role: 'system',
-          content: `You are an intent classifier for a Binan, Laguna tourism app. Analyze user messages and return ONLY a JSON object with this structure:
+export async function identifyIntent(userMessage: string, conversationHistory?: any[]): Promise<SearchIntent> {
+  try {
+    const messages = [
+      {
+        role: 'system',
+        content: `You are an intent classifier for a Binan, Laguna tourism app. Analyze user messages and return ONLY a JSON object with this structure:
 
 {
   "type": "search_places" | "chat" | "clarification",
@@ -76,33 +75,32 @@ Examples:
 "hotels in binan" → {"type":"search_places","nearby":false,"includedTypes":["lodging"],"confidence":0.95}
 "what's good to eat here?" → {"type":"chat","nearby":false,"confidence":0.8}
 "near me" (after discussing restaurants) → {"type":"search_places","nearby":true,"includedTypes":["restaurant"],"radius":1000,"confidence":0.8}`
-        },
-        ...(conversationHistory ? conversationHistory.slice(-4) : []), // Last 4 messages for context
-        {
-          role: 'user',
-          content: userMessage
-        }
-      ];
+      },
+      ...(conversationHistory ? conversationHistory.slice(-4) : []), // Last 4 messages for context
+      {
+        role: 'user',
+        content: userMessage
+      }
+    ];
 
-      const completion = await groq.chat.completions.create({
-        messages,
-        model: 'llama-3.3-70b-versatile',
-        temperature: 0.1,
-        max_tokens: 200,
-      });
+    const completion = await groq.chat.completions.create({
+      messages,
+      model: 'llama-3.3-70b-versatile',
+      temperature: 0.1,
+      max_tokens: 200,
+    });
 
-      const response = completion.choices[0]?.message?.content;
-      if (!response) throw new Error('No response from Groq');
+    const response = completion.choices[0]?.message?.content;
+    if (!response) throw new Error('No response from Groq');
 
-      return JSON.parse(response.trim());
-    } catch (error) {
-      console.error('Intent identification error:', error);
-      return {
-        type: 'clarification',
-        nearby: false,
-        clarificationQuestion: 'Could you please clarify what you\'re looking for? I can help you find places or answer questions about Binan.',
-        confidence: 0.1
-      };
-    }
+    return JSON.parse(response.trim());
+  } catch (error) {
+    console.error('Intent identification error:', error);
+    return {
+      type: 'clarification',
+      nearby: false,
+      clarificationQuestion: 'Could you please clarify what you\'re looking for? I can help you find places or answer questions about Binan.',
+      confidence: 0.1
+    };
   }
 }

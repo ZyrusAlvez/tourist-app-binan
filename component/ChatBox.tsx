@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ChatService, ChatResponse } from '@/services/chatService';
+import { processMessage, ChatResponse } from '@/services/chatService';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
 interface Message {
@@ -88,7 +88,7 @@ const ChatBox = () => {
               content: msg.text
             }));
             
-            const response: ChatResponse = await ChatService.processMessage(pendingSearchRef.current, newLocation, currentConversationHistory);
+            const response: ChatResponse = await processMessage(pendingSearchRef.current, newLocation, currentConversationHistory);
             console.log('Search completed:', response);
             // Remove typing indicator and add response
             setMessages(prev => {
@@ -172,7 +172,7 @@ const ChatBox = () => {
         content: msg.text
       }));
       
-      const response: ChatResponse = await ChatService.processMessage(input, userLocation, conversationHistory);
+      const response: ChatResponse = await processMessage(input, userLocation, conversationHistory);
       console.log('Chat response:', response);
       
       if (response.requiresLocation) {
