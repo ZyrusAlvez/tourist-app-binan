@@ -1,7 +1,7 @@
 import groq from '@/lib/groq';
 
 export interface SearchIntent {
-  type: 'search_places' | 'chat' | 'clarification';
+  type: 'search_places' | 'chat' | 'clarification' | 'recommendation';
   nearby: boolean;
   includedTypes?: string[];
   radius?: number;
@@ -38,7 +38,7 @@ export async function identifyIntent(userMessage: string, conversationHistory?: 
         content: `You are an intent classifier for a Binan, Laguna tourism app. Analyze user messages and return ONLY a JSON object with this structure:
 
 {
-  "type": "search_places" | "chat" | "clarification",
+  "type": "search_places" | "chat" | "clarification" | "recommendation",
   "nearby": boolean,
   "includedTypes": string[],
   "radius": number,
@@ -48,7 +48,8 @@ export async function identifyIntent(userMessage: string, conversationHistory?: 
 
 Rules:
 - "search_places": when user wants any place types (restaurants, cafes, hotels, attractions, etc.)
-- "chat": for general questions, recommendations, or information about places/city
+- "recommendation": when user asks for suggestions, recommendations, or "what's good"
+- "chat": for general questions or information about places/city
 - "clarification": when intent is unclear, include clarificationQuestion
 - "nearby": true if user mentions "nearby", "near me", "close", etc.
 - "includedTypes": YOU MUST ONLY USE THESE EXACT STRINGS: ${PLACE_TYPES.join(', ')}. DO NOT CREATE NEW TYPES. DO NOT USE VARIATIONS.
@@ -73,7 +74,8 @@ Common mappings (USE EXACT STRINGS FROM LIST):
 Examples:
 "find nearby restaurants" → {"type":"search_places","nearby":true,"includedTypes":["restaurant"],"radius":1000,"confidence":0.9}
 "hotels in binan" → {"type":"search_places","nearby":false,"includedTypes":["lodging"],"confidence":0.95}
-"what's good to eat here?" → {"type":"chat","nearby":false,"confidence":0.8}
+"recommend a good restaurant" → {"type":"recommendation","nearby":false,"includedTypes":["restaurant"],"confidence":0.9}
+"what's good to eat here?" → {"type":"recommendation","nearby":false,"includedTypes":["restaurant"],"confidence":0.85}
 "near me" (after discussing restaurants) → {"type":"search_places","nearby":true,"includedTypes":["restaurant"],"radius":1000,"confidence":0.8}`
       },
       ...(conversationHistory ? conversationHistory.slice(-4) : []), // Last 4 messages for context

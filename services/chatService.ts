@@ -71,6 +71,25 @@ export async function processMessage(
       };
     }
 
+    if (intent.type === 'recommendation' && intent.includedTypes) {
+      console.log('Running recommendation search...', intent.includedTypes);
+      const places = intent.nearby 
+        ? await searchNearPlaces(intent.includedTypes, userLocation, intent.radius)
+        : await searchAllPlaces(intent.includedTypes);
+      
+      const topPlaces = places.slice(0, 5);
+      const chatResponse = await sendMessage([
+        { role: 'user', content: `Based on ratings, recommend these top ${intent.includedTypes.join(', ')} in Binan: ${topPlaces.map(p => `${p.displayName} (${p.rating || 'N/A'} stars)`).join(', ')}. Give a friendly recommendation message.` }
+      ]);
+      
+      return {
+        message: chatResponse,
+        searchResults: { places: topPlaces, message: `Top ${topPlaces.length} recommendations` },
+        intent,
+        places: topPlaces
+      };
+    }
+
     // Default chat response with conversation history
     console.log('Using default chat response for intent:', intent.type);
     const messages: ChatMessage[] = [
