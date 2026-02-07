@@ -1,35 +1,31 @@
 'use client';
 
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
+import { Map } from '@vis.gl/react-google-maps';
 import CityPolygon from './CityMap/cityPolygon';
 
-const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
-
 const MapComponent = () => (
-  <APIProvider apiKey={API_KEY}>
-    <div className='flex'>
-      <Map
-        defaultZoom={12}
-        defaultCenter={{ lat: 14.3145578, lng: 121.0831646 }}
-        gestureHandling="greedy"
-        disableDefaultUI={true}
-        restriction={{
-          latLngBounds: {
-            north: 14.36,
-            south: 14.2483,
-            east: 121.12,
-            west: 121.032490
-          },
-          strictBounds: true
-        }}
-        minZoom={11}
-        maxZoom={21}
-        style={{ width: '100%', height: '100vh' }}
-      >
-        <CityPolygon />
-      </Map>
-    </div>
-  </APIProvider>
+  <div className='flex'>
+    <Map
+      defaultZoom={12}
+      defaultCenter={{ lat: 14.3145578, lng: 121.0831646 }}
+      gestureHandling="greedy"
+      disableDefaultUI={true}
+      restriction={{
+        latLngBounds: {
+          north: 14.36,
+          south: 14.2483,
+          east: 121.12,
+          west: 121.032490
+        },
+        strictBounds: true
+      }}
+      minZoom={11}
+      maxZoom={21}
+      style={{ width: '100%', height: '100vh' }}
+    >
+      <CityPolygon />
+    </Map>
+  </div>
 );
 
 export default MapComponent;
