@@ -1,11 +1,13 @@
 'use client';
 
-import { Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { useState } from 'react';
+import { Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
 import CityPolygon from './CityMap/cityPolygon';
 import { usePlaces } from '@/context/PlacesContext';
 
 const MapComponent = () => {
   const { selectedPlaces } = usePlaces();
+  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
 
   return (
     <div className='flex'>
@@ -33,8 +35,35 @@ const MapComponent = () => {
           <AdvancedMarker
             key={place.id}
             position={place.location}
+            onClick={() => setSelectedMarker(place.id)}
           />
         ))}
+        
+        {selectedMarker && (
+          <InfoWindow
+            position={selectedPlaces.find(p => p.id === selectedMarker)?.location}
+            onCloseClick={() => setSelectedMarker(null)}
+          >
+            <div className="p-2">
+              <h3 className="font-semibold text-gray-900 mb-1">
+                {selectedPlaces.find(p => p.id === selectedMarker)?.displayName}
+              </h3>
+              {selectedPlaces.find(p => p.id === selectedMarker)?.rating && (
+                <div className="flex items-center gap-1 text-sm">
+                  <span className="text-yellow-500">★</span>
+                  <span className="text-gray-700">
+                    {selectedPlaces.find(p => p.id === selectedMarker)?.rating}
+                  </span>
+                  {selectedPlaces.find(p => p.id === selectedMarker)?.userRatingCount && (
+                    <span className="text-gray-500">
+                      ({selectedPlaces.find(p => p.id === selectedMarker)?.userRatingCount})
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </InfoWindow>
+        )}
       </Map>
     </div>
   );
