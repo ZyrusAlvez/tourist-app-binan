@@ -1,6 +1,6 @@
 import groq from '@/lib/groq';
 import { identifyIntent, SearchIntent } from './intentService';
-import { searchAllPlaces, searchNearPlaces, SearchResponse } from './searchService';
+import { searchAllPlaces, searchNearPlaces, SearchResponse, SearchResult } from './searchService';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -12,6 +12,7 @@ export interface ChatResponse {
   searchResults?: SearchResponse;
   requiresLocation?: boolean;
   intent: SearchIntent;
+  places?: SearchResult[];
 }
 
 export async function sendMessage(messages: ChatMessage[]): Promise<string> {
@@ -65,7 +66,8 @@ export async function processMessage(
       return {
         message: chatResponse,
         searchResults: { places, message: `Found ${places.length} places` },
-        intent
+        intent,
+        places
       };
     }
 

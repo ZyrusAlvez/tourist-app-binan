@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { processMessage, ChatResponse } from '@/services/chatService';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
+import { usePlaces } from '@/context/PlacesContext';
 
 interface Message {
   id: string;
@@ -12,6 +13,7 @@ interface Message {
 }
 
 const ChatBox = () => {
+  const { setSelectedPlaces } = usePlaces();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -90,6 +92,11 @@ const ChatBox = () => {
             
             const response: ChatResponse = await processMessage(pendingSearchRef.current, newLocation, currentConversationHistory);
             console.log('Search completed:', response);
+            
+            if (response.places) {
+              setSelectedPlaces(response.places);
+            }
+            
             // Remove typing indicator and add response
             setMessages(prev => {
               const filtered = prev.filter(msg => msg.id !== 'typing');
@@ -174,6 +181,10 @@ const ChatBox = () => {
       
       const response: ChatResponse = await processMessage(input, userLocation, conversationHistory);
       console.log('Chat response:', response);
+      
+      if (response.places) {
+        setSelectedPlaces(response.places);
+      }
       
       if (response.requiresLocation) {
         console.log('Location required, showing message and requesting location');
