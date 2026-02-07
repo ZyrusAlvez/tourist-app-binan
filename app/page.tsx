@@ -1,9 +1,17 @@
-import MapComponent from '../component/CityMap';
+import CityMap from '../component/CityMap';
+import ChatBox from '../component/ChatBox';
 
-const page = () => {
+const Page = () => {
   return (
-    <MapComponent />
+    <div className="flex h-screen">
+      <div className="w-[60%]">
+        <CityMap />
+      </div>
+      <div className="w-[40%]">
+        <ChatBox />
+      </div>
+    </div>  
   )
 }
 
-export default page
+export default Page

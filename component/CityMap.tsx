@@ -2,7 +2,6 @@
 
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import CityPolygon from './CityMap/cityPolygon';
-import ChatBox from './ChatBox';
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
@@ -29,7 +28,6 @@ const MapComponent = () => (
       >
         <CityPolygon />
       </Map>
-      <ChatBox />
     </div>
   </APIProvider>
 );
