@@ -53,7 +53,7 @@ const ChatBox = () => {
     
     if (choice === 'tourist') {
       setTimeout(() => {
-        addMessage('Will you be staying at a hotel?', true);
+        addMessage('Will you be staying at a lodging?', true);
         setStep('hotel');
       }, 500);
     } else {
