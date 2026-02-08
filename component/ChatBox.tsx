@@ -26,11 +26,11 @@ const ChatBox = () => {
   const messageIdCounter = useRef(0);
 
   useEffect(() => {
-    if (inputFromMap) {
+    if (inputFromMap && lodgingOptions.length > 0) {
       setInput(inputFromMap);
       setInputFromMap('');
     }
-  }, [inputFromMap, setInputFromMap]);
+  }, [inputFromMap, setInputFromMap, lodgingOptions.length]);
 
   // Add initial message when Google Maps is ready
   useEffect(() => {
