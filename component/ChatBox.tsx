@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { processMessage, ChatResponse } from '@/services/chatService';
 import { usePlaces } from '@/context/PlacesContext';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
+import { SearchResult } from '@/services/searchService';
 
 interface Message {
   id: string;
@@ -13,14 +14,23 @@ interface Message {
 }
 
 const ChatBox = () => {
-  const { setSelectedPlaces } = usePlaces();
+  const { setSelectedPlaces, setFocusedPlace, triggerFocus, inputFromMap, setInputFromMap } = usePlaces();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [step, setStep] = useState<'initial' | 'hotel' | 'done'>('initial');
+  const [step, setStep] = useState<'initial' | 'hotel' | 'done' | 'transitioning'>('initial');
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState('');
+  const [lodgingOptions, setLodgingOptions] = useState<SearchResult[]>([]);
   const placesLib = useMapsLibrary('places');
   const isGoogleMapsReady = placesLib && window.google?.maps?.places?.Place;
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const selectedLodgingRef = useRef<{ displayName: string; location: { lat: number; lng: number } } | null>(null);
+
+  useEffect(() => {
+    if (inputFromMap) {
+      setInput(inputFromMap);
+      setInputFromMap('');
+    }
+  }, [inputFromMap, setInputFromMap]);
 
   // Add initial message when Google Maps is ready
   useEffect(() => {
@@ -49,6 +59,7 @@ const ChatBox = () => {
   };
 
   const handleInitialChoice = (choice: 'tourist' | 'local') => {
+    setStep('transitioning');
     addMessage(choice === 'tourist' ? 'Tourist' : 'Local', false);
     
     if (choice === 'tourist') {
@@ -63,12 +74,37 @@ const ChatBox = () => {
   };
 
   const handleHotelChoice = (choice: 'yes' | 'no') => {
+    setStep('transitioning');
     addMessage(choice === 'yes' ? 'Yes' : 'No', false);
-    setStep('done');
     
     if (choice === 'yes') {
+      setStep('done');
       searchPlaces('searching for hotel');
+    } else {
+      setStep('done');
     }
+  };
+
+  const handleLodgingSelect = (lodging: SearchResult) => {
+    setFocusedPlace(lodging);
+    triggerFocus();
+    setInput(lodging.displayName);
+  };
+
+  const handleLodgingSubmit = () => {
+    if (!input.trim()) return;
+    const selected = lodgingOptions.find(l => l.displayName === input.trim());
+    if (selected) {
+      selectedLodgingRef.current = {
+        displayName: selected.displayName,
+        location: selected.location
+      };
+    }
+    console.log('Selected Lodging:', selectedLodgingRef.current);
+    addMessage(input.trim(), false);
+    setInput('');
+    setLodgingOptions([]);
+    setStep('done');
   };
 
   const searchPlaces = async (query: string) => {
@@ -88,6 +124,10 @@ const ChatBox = () => {
       
       if (response.places) {
         setSelectedPlaces(response.places);
+        
+        if (query.includes('hotel')) {
+          setLodgingOptions(response.places);
+        }
       }
       
       setTimeout(() => {
@@ -201,6 +241,20 @@ const ChatBox = () => {
               </button>
             </div>
           )}
+          
+          {lodgingOptions.length > 0 && (
+            <div className="flex flex-wrap gap-2 justify-end">
+              {lodgingOptions.map((lodging, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleLodgingSelect(lodging)}
+                  className="px-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                >
+                  {lodging.displayName}
+                </button>
+              ))}
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -211,14 +265,14 @@ const ChatBox = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+            onKeyDown={(e) => e.key === 'Enter' && (lodgingOptions.length > 0 ? handleLodgingSubmit() : handleSendMessage())}
             placeholder="Type a message..."
-            disabled={step !== 'done' || isLoading}
+            disabled={(step !== 'done' && lodgingOptions.length === 0) || isLoading}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           <button
-            onClick={handleSendMessage}
-            disabled={step !== 'done' || isLoading || !input.trim()}
+            onClick={lodgingOptions.length > 0 ? handleLodgingSubmit : handleSendMessage}
+            disabled={(step !== 'done' && lodgingOptions.length === 0) || isLoading || !input.trim()}
             className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             Send

@@ -1,14 +1,43 @@
 'use client';
 
-import { useState } from 'react';
-import { Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { useState, useEffect, useRef } from 'react';
+import { Map, AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
 import CityPolygon from './CityMap/cityPolygon';
 import { usePlaces } from '@/context/PlacesContext';
 import { SearchResult } from '@/services/searchService';
 import PlaceInfoPanel from './PlaceInfoPanel';
 
+const MapContent = ({ selectedPlace, setSelectedPlace }: { selectedPlace: SearchResult | null; setSelectedPlace: (place: SearchResult | null) => void }) => {
+  const { selectedPlaces, focusedPlace, focusTrigger, setInputFromMap } = usePlaces();
+  const map = useMap();
+
+  useEffect(() => {
+    if (focusedPlace && map && focusTrigger > 0) {
+      map.setCenter(focusedPlace.location);
+      map.setZoom(16);
+      setSelectedPlace(focusedPlace);
+    }
+  }, [focusTrigger]);
+
+  return (
+    <>
+      <CityPolygon />
+      {selectedPlaces.map((place, index) => (
+        <AdvancedMarker
+          key={`${place.displayName}-${index}`}
+          position={place.location}
+          onClick={() => {
+            setSelectedPlace(place);
+            setInputFromMap(place.displayName);
+          }}
+        />
+      ))}
+    </>
+  );
+};
+
 const MapComponent = () => {
-  const { selectedPlaces } = usePlaces();
+  const { selectedPlaces, focusedPlace, focusTrigger } = usePlaces();
   const [selectedPlace, setSelectedPlace] = useState<SearchResult | null>(null);
 
   return (
@@ -16,7 +45,10 @@ const MapComponent = () => {
       {selectedPlace && (
         <PlaceInfoPanel 
           place={selectedPlace} 
-          onClose={() => setSelectedPlace(null)} 
+          onClose={() => {
+            console.log('Closing panel');
+            setSelectedPlace(null);
+          }} 
         />
       )}
       
@@ -40,14 +72,7 @@ const MapComponent = () => {
           maxZoom={21}
           style={{ width: '100%', height: '100%' }}
         >
-          <CityPolygon />
-          {selectedPlaces.map((place, index) => (
-            <AdvancedMarker
-              key={`${place.displayName}-${index}`}
-              position={place.location}
-              onClick={() => setSelectedPlace(place)}
-            />
-          ))}
+          <MapContent selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />
         </Map>
       </div>
     </div>

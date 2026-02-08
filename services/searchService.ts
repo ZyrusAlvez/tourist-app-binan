@@ -9,7 +9,7 @@ export interface SearchResult {
   googleMapsURI?: string;
   photos?: any[];
   priceLevel?: string;
-  regularOpeningHours?: any;
+  regularOpeningHours?: any;  
   reviews?: any[];
   formattedAddress?: string;
   nationalPhoneNumber?: string;
