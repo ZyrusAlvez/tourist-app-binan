@@ -1,12 +1,18 @@
 import { isPointInPolygon } from '@/utility/validator';
 
 export interface SearchResult {
-  id: string;
   displayName: string;
   location: { lat: number; lng: number };
   types: string[];
   rating?: number;
   userRatingCount?: number;
+  googleMapsURI?: string;
+  photos?: any[];
+  priceLevel?: string;
+  regularOpeningHours?: any;
+  reviews?: any[];
+  formattedAddress?: string;
+  nationalPhoneNumber?: string;
 }
 
 export interface SearchResponse {
@@ -37,7 +43,7 @@ export async function searchAllPlaces(includedTypes: string[]): Promise<SearchRe
         },
         includedTypes,
         maxResultCount: 20,
-        fields: ['id', 'displayName', 'location', 'types', 'rating', 'userRatingCount'],
+        fields: ['displayName', 'location', 'types', 'rating', 'userRatingCount', 'googleMapsURI', 'photos', 'priceLevel', 'regularOpeningHours', 'reviews', 'formattedAddress', 'nationalPhoneNumber'],
         rankPreference: window.google.maps.places.SearchNearbyRankPreference.POPULARITY,
       });
 
@@ -51,7 +57,6 @@ export async function searchAllPlaces(includedTypes: string[]): Promise<SearchRe
           }) : true;
         })
         .map(place => ({
-          id: place.id!,
           displayName: place.displayName || '',
           location: {
             lat: place.location!.lat(),
@@ -59,7 +64,14 @@ export async function searchAllPlaces(includedTypes: string[]): Promise<SearchRe
           },
           types: place.types || [],
           rating: place.rating || undefined,
-          userRatingCount: place.userRatingCount || undefined
+          userRatingCount: place.userRatingCount || undefined,
+          googleMapsURI: place.googleMapsURI || undefined,
+          photos: place.photos || undefined,
+          priceLevel: place.priceLevel || undefined,
+          regularOpeningHours: place.regularOpeningHours || undefined,
+          reviews: place.reviews || undefined,
+          formattedAddress: place.formattedAddress || undefined,
+          nationalPhoneNumber: place.nationalPhoneNumber || undefined
         })) || [];
 
       allPlaces.push(...filteredPlaces);
@@ -102,7 +114,7 @@ export async function searchNearPlaces(
       },
       includedTypes,
       maxResultCount: 20,
-      fields: ['id', 'displayName', 'location', 'types', 'rating', 'userRatingCount'],
+      fields: ['displayName', 'location', 'types', 'rating', 'userRatingCount', 'googleMapsURI', 'photos', 'priceLevel', 'regularOpeningHours', 'reviews', 'formattedAddress', 'nationalPhoneNumber'],
       rankPreference: window.google.maps.places.SearchNearbyRankPreference.DISTANCE,
     });
 
@@ -117,7 +129,6 @@ export async function searchNearPlaces(
         });
       })
       .map(place => ({
-        id: place.id!,
         displayName: place.displayName || '',
         location: {
           lat: place.location!.lat(),
@@ -125,7 +136,14 @@ export async function searchNearPlaces(
         },
         types: place.types || [],
         rating: place.rating || undefined,
-        userRatingCount: place.userRatingCount || undefined
+        userRatingCount: place.userRatingCount || undefined,
+        googleMapsURI: place.googleMapsURI || undefined,
+        photos: place.photos || undefined,
+        priceLevel: place.priceLevel || undefined,
+        regularOpeningHours: place.regularOpeningHours || undefined,
+        reviews: place.reviews || undefined,
+        formattedAddress: place.formattedAddress || undefined,
+        nationalPhoneNumber: place.nationalPhoneNumber || undefined
       })) || [];
 
     console.log('Filtered places:', places.length);

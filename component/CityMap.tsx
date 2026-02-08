@@ -7,7 +7,7 @@ import { usePlaces } from '@/context/PlacesContext';
 
 const MapComponent = () => {
   const { selectedPlaces } = usePlaces();
-  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<number | null>(null);
 
   return (
     <div className='flex'>
@@ -31,32 +31,32 @@ const MapComponent = () => {
         style={{ width: '100%', height: '100vh' }}
       >
         <CityPolygon />
-        {selectedPlaces.map((place) => (
+        {selectedPlaces.map((place, index) => (
           <AdvancedMarker
-            key={place.id}
+            key={`${place.displayName}-${index}`}
             position={place.location}
-            onClick={() => setSelectedMarker(place.id)}
+            onClick={() => setSelectedMarker(index)}
           />
         ))}
         
-        {selectedMarker && (
+        {selectedMarker !== null && (
           <InfoWindow
-            position={selectedPlaces.find(p => p.id === selectedMarker)?.location}
+            position={selectedPlaces[selectedMarker]?.location}
             onCloseClick={() => setSelectedMarker(null)}
           >
             <div className="p-2">
               <h3 className="font-semibold text-gray-900 mb-1">
-                {selectedPlaces.find(p => p.id === selectedMarker)?.displayName}
+                {selectedPlaces[selectedMarker]?.displayName}
               </h3>
-              {selectedPlaces.find(p => p.id === selectedMarker)?.rating && (
+              {selectedPlaces[selectedMarker]?.rating && (
                 <div className="flex items-center gap-1 text-sm">
                   <span className="text-yellow-500">★</span>
                   <span className="text-gray-700">
-                    {selectedPlaces.find(p => p.id === selectedMarker)?.rating}
+                    {selectedPlaces[selectedMarker]?.rating}
                   </span>
-                  {selectedPlaces.find(p => p.id === selectedMarker)?.userRatingCount && (
+                  {selectedPlaces[selectedMarker]?.userRatingCount && (
                     <span className="text-gray-500">
-                      ({selectedPlaces.find(p => p.id === selectedMarker)?.userRatingCount})
+                      ({selectedPlaces[selectedMarker]?.userRatingCount})
                     </span>
                   )}
                 </div>
