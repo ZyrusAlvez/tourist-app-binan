@@ -24,6 +24,7 @@ const ChatBox = () => {
   const isGoogleMapsReady = placesLib && window.google?.maps?.places?.Place;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const selectedLodgingRef = useRef<{ displayName: string; location: { lat: number; lng: number } } | null>(null);
+  const messageIdCounter = useRef(0);
 
   useEffect(() => {
     if (inputFromMap) {
@@ -50,8 +51,9 @@ const ChatBox = () => {
   }, [messages]);
 
   const addMessage = (text: string, isBot: boolean) => {
+    messageIdCounter.current += 1;
     setMessages(prev => [...prev, {
-      id: Date.now().toString(),
+      id: `msg-${messageIdCounter.current}`,
       text,
       isBot,
       timestamp: new Date()
@@ -73,13 +75,14 @@ const ChatBox = () => {
     }
   };
 
-  const handleHotelChoice = (choice: 'yes' | 'no') => {
+  const handleHotelChoice = async (choice: 'yes' | 'no') => {
     setStep('transitioning');
     addMessage(choice === 'yes' ? 'Yes' : 'No', false);
     
     if (choice === 'yes') {
       setStep('done');
-      searchPlaces('searching for hotel');
+      await searchPlaces('searching for hotel');
+      addMessage('Please select your lodging from the options below and we will start your itinerary plan from there', true);
     } else {
       setStep('done');
     }
@@ -130,9 +133,6 @@ const ChatBox = () => {
         }
       }
       
-      setTimeout(() => {
-        addMessage(response.message || 'Check the map for results!', true);
-      }, 1000);
     } catch (error) {
       console.error('Error:', error);
       addMessage('Sorry, there was an error. Please refresh the page.', true);
@@ -265,14 +265,14 @@ const ChatBox = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && (lodgingOptions.length > 0 ? handleLodgingSubmit() : handleSendMessage())}
+            onKeyDown={(e) => e.key === 'Enter' && lodgingOptions.length === 0 && handleSendMessage()}
             placeholder="Type a message..."
-            disabled={(step !== 'done' && lodgingOptions.length === 0) || isLoading}
+            disabled={(step !== 'done' && lodgingOptions.length === 0) || isLoading || lodgingOptions.length > 0}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           <button
             onClick={lodgingOptions.length > 0 ? handleLodgingSubmit : handleSendMessage}
-            disabled={(step !== 'done' && lodgingOptions.length === 0) || isLoading || !input.trim()}
+            disabled={(step !== 'done' && lodgingOptions.length === 0) || isLoading || (lodgingOptions.length > 0 && !input.trim())}
             className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             Send
