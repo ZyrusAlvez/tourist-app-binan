@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { SearchResult } from '@/services/searchService';
 
 interface PlaceInfoPanelProps {
@@ -6,8 +7,11 @@ interface PlaceInfoPanelProps {
 }
 
 const PlaceInfoPanel = ({ place, onClose }: PlaceInfoPanelProps) => {
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
+
   return (
-    <div className='w-96 bg-white shadow-lg overflow-y-auto'>
+    <>
+      <div className='w-96 bg-white shadow-lg overflow-y-auto'>
       <div className='p-4'>
         <button 
           onClick={onClose}
@@ -63,14 +67,18 @@ const PlaceInfoPanel = ({ place, onClose }: PlaceInfoPanelProps) => {
           <div className='mb-3'>
             <h3 className='font-semibold text-gray-900 mb-2'>Photos</h3>
             <div className='grid grid-cols-2 gap-2'>
-              {place.photos.slice(0, 4).map((photo, idx) => (
-                <img 
-                  key={idx}
-                  src={photo.getURI({ maxWidth: 200, maxHeight: 200 })}
-                  alt={`Photo ${idx + 1}`}
-                  className='w-full h-32 object-cover rounded'
-                />
-              ))}
+              {place.photos.slice(0, 4).map((photo, idx) => {
+                const photoUri = photo.getURI({ maxWidth: 200, maxHeight: 200 });
+                return (
+                  <img 
+                    key={idx}
+                    src={photoUri}
+                    alt={`Photo ${idx + 1}`}
+                    className='w-full h-32 object-cover rounded cursor-pointer hover:opacity-80'
+                    onClick={() => setExpandedImage(photo.getURI({ maxWidth: 800, maxHeight: 800 }))}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
@@ -116,7 +124,21 @@ const PlaceInfoPanel = ({ place, onClose }: PlaceInfoPanelProps) => {
           </a>
         )}
       </div>
-    </div>
+      </div>
+
+      {expandedImage && (
+        <div 
+          className='fixed inset-0 backdrop-blur-sm bg-white/20 flex items-center justify-center z-50'
+          onClick={() => setExpandedImage(null)}
+        >
+          <img 
+            src={expandedImage} 
+            alt='Expanded view'
+            className='max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded'
+          />
+        </div>
+      )}
+    </>
   );
 };
 
