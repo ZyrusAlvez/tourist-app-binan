@@ -10,7 +10,6 @@ interface Message {
   id: string;
   text: string;
   isBot: boolean;
-  timestamp: Date;
 }
 
 const ChatBox = () => {
@@ -39,8 +38,7 @@ const ChatBox = () => {
       setMessages([{
         id: '1',
         text: 'Are you a local or a tourist?',
-        isBot: true,
-        timestamp: new Date()
+        isBot: true
       }]);
     }
   }, [isGoogleMapsReady, messages.length]);
@@ -55,8 +53,7 @@ const ChatBox = () => {
     setMessages(prev => [...prev, {
       id: `msg-${messageIdCounter.current}`,
       text,
-      isBot,
-      timestamp: new Date()
+      isBot
     }]);
   };
 
