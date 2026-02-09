@@ -15,7 +15,7 @@ interface Message {
 const ChatBox = () => {
   const { setSelectedPlaces, setFocusedPlace, triggerFocus, inputFromMap, setInputFromMap } = usePlaces();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [step, setStep] = useState<'initial' | 'hotel' | 'done' | 'transitioning'>('initial');
+  const [step, setStep] = useState<'initial' | 'hotel' | 'lodging' | 'days' | 'done' | 'transitioning'>('initial');
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState('');
   const [lodgingOptions, setLodgingOptions] = useState<SearchResult[]>([]);
@@ -77,7 +77,7 @@ const ChatBox = () => {
     addMessage(choice === 'yes' ? 'Yes' : 'No', false);
     
     if (choice === 'yes') {
-      setStep('done');
+      setStep('lodging');
       await searchPlaces('searching for hotel');
       addMessage('Please select your lodging from the options below and we will start your itinerary plan from there', true);
     } else {
@@ -100,10 +100,20 @@ const ChatBox = () => {
         location: selected.location
       };
     }
-    console.log('Selected Lodging:', selectedLodgingRef.current);
     addMessage(input.trim(), false);
     setInput('');
     setLodgingOptions([]);
+    setTimeout(() => {
+      addMessage('How many days are you planning to stay? (1-7 days)', true);
+      setStep('days');
+    }, 500);
+  };
+
+  const handleDaysSubmit = () => {
+    const days = parseInt(input.trim());
+    if (!input.trim() || isNaN(days) || days < 1 || days > 7) return;
+    addMessage(input.trim(), false);
+    setInput('');
     setStep('done');
   };
 
@@ -261,15 +271,32 @@ const ChatBox = () => {
           <input
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && lodgingOptions.length === 0 && handleSendMessage()}
-            placeholder="Type a message..."
-            disabled={(step !== 'done' && lodgingOptions.length === 0) || isLoading || lodgingOptions.length > 0}
+            onChange={(e) => {
+              if (step === 'days') {
+                const val = e.target.value;
+                if (val === '' || (val.length === 1 && /^[1-7]$/.test(val))) setInput(val);
+              } else {
+                setInput(e.target.value);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (step === 'days') handleDaysSubmit();
+                else if (step === 'lodging') handleLodgingSubmit();
+                else if (step === 'done') handleSendMessage();
+              }
+            }}
+            placeholder={step === 'days' ? 'Enter 1-7 days...' : 'Type a message...'}
+            disabled={(step !== 'done' && step !== 'lodging' && step !== 'days') || isLoading}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           <button
-            onClick={lodgingOptions.length > 0 ? handleLodgingSubmit : handleSendMessage}
-            disabled={(step !== 'done' && lodgingOptions.length === 0) || isLoading || (lodgingOptions.length > 0 && !input.trim())}
+            onClick={() => {
+              if (step === 'days') handleDaysSubmit();
+              else if (step === 'lodging') handleLodgingSubmit();
+              else handleSendMessage();
+            }}
+            disabled={(step !== 'done' && step !== 'lodging' && step !== 'days') || isLoading || !input.trim()}
             className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             Send
