@@ -273,8 +273,9 @@ const ChatBox = () => {
             value={input}
             onChange={(e) => {
               if (step === 'days') {
-                const val = e.target.value;
-                if (val === '' || (val.length === 1 && /^[1-7]$/.test(val))) setInput(val);
+                const lastChar = e.target.value.slice(-1);
+                if (/^[1-7]$/.test(lastChar)) setInput(lastChar);
+                else if (e.target.value === '') setInput('');
               } else {
                 setInput(e.target.value);
               }
