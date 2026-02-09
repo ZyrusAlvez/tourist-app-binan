@@ -5,6 +5,7 @@ import { processMessage, ChatResponse } from '@/services/chatService';
 import { usePlaces } from '@/context/PlacesContext';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import { SearchResult } from '@/services/searchService';
+import { PLACE_TYPES } from '@/services/intentService';
 
 interface Message {
   id: string;
@@ -15,7 +16,7 @@ interface Message {
 const ChatBox = () => {
   const { setSelectedPlaces, setFocusedPlace, triggerFocus, inputFromMap, setInputFromMap } = usePlaces();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [step, setStep] = useState<'initial' | 'hotel' | 'lodging' | 'days' | 'done' | 'transitioning'>('initial');
+  const [step, setStep] = useState<'initial' | 'hotel' | 'lodging' | 'days' | 'preferences' | 'done' | 'transitioning'>('initial');
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState('');
   const [lodgingOptions, setLodgingOptions] = useState<SearchResult[]>([]);
@@ -24,6 +25,7 @@ const ChatBox = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const selectedLodgingRef = useRef<{ displayName: string; location: { lat: number; lng: number } } | null>(null);
   const messageIdCounter = useRef(0);
+  const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
 
   useEffect(() => {
     if (inputFromMap && lodgingOptions.length > 0) {
@@ -114,6 +116,25 @@ const ChatBox = () => {
     if (!input.trim() || isNaN(days) || days < 1 || days > 7) return;
     addMessage(input.trim(), false);
     setInput('');
+    setTimeout(() => {
+      addMessage('What are your preferences? (Select one or more)', true);
+      setStep('preferences');
+    }, 500);
+  };
+
+  const togglePreference = (pref: string) => {
+    setSelectedPreferences(prev => {
+      const newPrefs = prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref];
+      setInput(newPrefs.join(', '));
+      return newPrefs;
+    });
+  };
+
+  const handlePreferencesSubmit = () => {
+    if (selectedPreferences.length === 0) return;
+    addMessage(selectedPreferences.join(', '), false);
+    setInput('');
+    setSelectedPreferences([]);
     setStep('done');
   };
 
@@ -262,6 +283,47 @@ const ChatBox = () => {
               ))}
             </div>
           )}
+          
+          {step === 'preferences' && (
+            <>
+              <div className="flex flex-col gap-2">
+                <p className="text-xs text-gray-600 font-semibold">Core</p>
+                <div className="flex flex-wrap gap-2">
+                  {['Historical & Heritage Sites', 'Educational & Museum Visits', 'Local Food & Cafés', 'Shopping & Commercial Areas', 'Religious & Cultural Sites', 'Sightseeing / Photo Spots'].map(pref => (
+                    <button
+                      key={pref}
+                      onClick={() => togglePreference(pref)}
+                      className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
+                        selectedPreferences.includes(pref)
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
+                      }`}
+                    >
+                      {pref}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-xs text-gray-600 font-semibold">Food Focus</p>
+                <div className="flex flex-wrap gap-2">
+                  {['Local Filipino cuisine', 'Cafés & coffee shops', 'Budget-friendly eateries', 'Popular local spots', 'Quick meals / food stops'].map(pref => (
+                    <button
+                      key={pref}
+                      onClick={() => togglePreference(pref)}
+                      className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
+                        selectedPreferences.includes(pref)
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
+                      }`}
+                    >
+                      {pref}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -272,6 +334,7 @@ const ChatBox = () => {
             type="text"
             value={input}
             onChange={(e) => {
+              if (step === 'preferences') return;
               if (step === 'days') {
                 const lastChar = e.target.value.slice(-1);
                 if (/^[1-7]$/.test(lastChar)) setInput(lastChar);
@@ -287,17 +350,18 @@ const ChatBox = () => {
                 else if (step === 'done') handleSendMessage();
               }
             }}
-            placeholder={step === 'days' ? 'Enter 1-7 days...' : 'Type a message...'}
-            disabled={(step !== 'done' && step !== 'lodging' && step !== 'days') || isLoading}
+            placeholder={step === 'days' ? 'Enter 1-7 days...' : step === 'preferences' ? 'Select preferences above...' : 'Type a message...'}
+            disabled={(step !== 'done' && step !== 'lodging' && step !== 'days' && step !== 'preferences') || isLoading}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           <button
             onClick={() => {
               if (step === 'days') handleDaysSubmit();
               else if (step === 'lodging') handleLodgingSubmit();
+              else if (step === 'preferences') handlePreferencesSubmit();
               else handleSendMessage();
             }}
-            disabled={(step !== 'done' && step !== 'lodging' && step !== 'days') || isLoading || !input.trim()}
+            disabled={(step !== 'done' && step !== 'lodging' && step !== 'days' && step !== 'preferences') || isLoading || !input.trim()}
             className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             Send

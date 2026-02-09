@@ -9,7 +9,7 @@ export interface SearchIntent {
   confidence: number;
 }
 
-const PLACE_TYPES = [
+export const PLACE_TYPES = [
   'accounting', 'acai_shop', 'afghani_restaurant', 'african_restaurant', 'american_restaurant',
   'asian_restaurant', 'attraction', 'atm', 'auditorium', 'bakery', 'banquet_hall', 'bar',
   'bar_and_grill', 'beauty_salon', 'betting_shop', 'botanical_garden', 'bowling_alley',
