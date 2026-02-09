@@ -16,7 +16,7 @@ interface Message {
 const ChatBox = () => {
   const { setSelectedPlaces, setFocusedPlace, triggerFocus, inputFromMap, setInputFromMap } = usePlaces();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [step, setStep] = useState<'initial' | 'hotel' | 'lodging' | 'days' | 'preferences' | 'done' | 'transitioning'>('initial');
+  const [step, setStep] = useState<'initial' | 'isLodging' | 'lodging' | 'days' | 'preferences' | 'done' | 'transitioning'>('initial');
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState('');
   const [lodgingOptions, setLodgingOptions] = useState<SearchResult[]>([]);
@@ -70,7 +70,7 @@ const ChatBox = () => {
     if (choice === 'tourist') {
       setTimeout(() => {
         addMessage('Will you be staying at a lodging?', true);
-        setStep('hotel');
+        setStep('isLodging');
       }, 500);
     } else {
       setStep('done');
@@ -265,7 +265,7 @@ const ChatBox = () => {
             </div>
           )}
           
-          {step === 'hotel' && (
+          {step === 'isLodging' && (
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => handleHotelChoice('yes')}
