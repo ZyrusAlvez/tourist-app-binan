@@ -73,8 +73,10 @@ const ChatBox = () => {
         setStep('isLodging');
       }, 500);
     } else {
-      setStep('done');
-      searchPlaces('searching for local spots');
+      setTimeout(() => {
+        addMessage('How many days should we plan your itinerary for? (1-7 days)', true);
+        setStep('days');
+      }, 500);
     }
   };
 
@@ -87,7 +89,10 @@ const ChatBox = () => {
       await searchPlaces('searching for hotel');
       addMessage('Please select your lodging from the options below and we will start your itinerary plan from there', true);
     } else {
-      setStep('done');
+      setTimeout(() => {
+        addMessage('How many days should we plan your itinerary for? (1-7 days)', true);
+        setStep('days');
+      }, 500);
     }
   };
 
@@ -110,7 +115,7 @@ const ChatBox = () => {
     setInput('');
     setLodgingOptions([]);
     setTimeout(() => {
-      addMessage('How many days are you planning to stay? (1-7 days)', true);
+      addMessage('How many days should we plan your itinerary for? (1-7 days)', true);
       setStep('days');
     }, 500);
   };
