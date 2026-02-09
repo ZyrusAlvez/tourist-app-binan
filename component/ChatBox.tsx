@@ -23,10 +23,13 @@ const ChatBox = () => {
   const placesLib = useMapsLibrary('places');
   const isGoogleMapsReady = placesLib && window.google?.maps?.places?.Place;
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const selectedLodgingRef = useRef<{ displayName: string; location: { lat: number; lng: number } } | null>(null);
   const messageIdCounter = useRef(0);
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
-  const selectedPlaceTypesRef = useRef<string[]>([]);
+  const userDataRef = useRef({
+    lodging: null as { displayName: string; location: { lat: number; lng: number } } | null,
+    days: 0,
+    placeTypes: [] as string[]
+  });
 
   useEffect(() => {
     if (inputFromMap && lodgingOptions.length > 0) {
@@ -98,7 +101,7 @@ const ChatBox = () => {
     if (!input.trim()) return;
     const selected = lodgingOptions.find(l => l.displayName === input.trim());
     if (selected) {
-      selectedLodgingRef.current = {
+      userDataRef.current.lodging = {
         displayName: selected.displayName,
         location: selected.location
       };
@@ -115,6 +118,7 @@ const ChatBox = () => {
   const handleDaysSubmit = () => {
     const days = parseInt(input.trim());
     if (!input.trim() || isNaN(days) || days < 1 || days > 7) return;
+    userDataRef.current.days = days;
     addMessage(input.trim(), false);
     setInput('');
     setTimeout(() => {
@@ -133,7 +137,7 @@ const ChatBox = () => {
         const types = PREFERENCE_TO_PLACE_TYPES[p] || [];
         types.forEach(t => allTypes.add(t));
       });
-      selectedPlaceTypesRef.current = Array.from(allTypes);
+      userDataRef.current.placeTypes = Array.from(allTypes);
       
       return newPrefs;
     });
@@ -144,6 +148,7 @@ const ChatBox = () => {
     addMessage(selectedPreferences.join(', '), false);
     setInput('');
     setSelectedPreferences([]);
+    console.log('User Data:', userDataRef.current);
     setStep('done');
   };
 
