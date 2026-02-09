@@ -10,25 +10,40 @@ export interface SearchIntent {
 }
 
 export const PLACE_TYPES = [
-  'accounting', 'acai_shop', 'afghani_restaurant', 'african_restaurant', 'american_restaurant',
-  'asian_restaurant', 'attraction', 'atm', 'auditorium', 'bakery', 'banquet_hall', 'bar',
-  'bar_and_grill', 'beauty_salon', 'betting_shop', 'botanical_garden', 'bowling_alley',
-  'brewery', 'breakfast_spot', 'buffet', 'butcher', 'cafe', 'car_dealer', 'car_rental',
-  'car_repair', 'car_wash', 'casino', 'childrens_camp', 'chinese_restaurant', 'church',
-  'civic_building', 'clothing_store', 'coffee_shop', 'convenience_store', 'corporate_office',
-  'cosmetics_store', 'dance_hall', 'dentist', 'department_store', 'diner', 'discount_store',
-  'doctor', 'drugstore', 'electrician', 'electronics_store', 'embassy', 'event_venue',
-  'farm', 'fast_food', 'ferry_terminal', 'fire_station', 'florist', 'food_court',
-  'funeral_home', 'furniture_store', 'garden', 'gas_station', 'general_contractor',
-  'grocery_or_supermarket', 'gym', 'hair_care', 'hardware_store', 'health', 'historic_site',
-  'hospital', 'insurance_agency', 'internet_cafe', 'italian_restaurant', 'jewelry_store',
-  'library', 'lodging', 'meal_delivery', 'meal_takeaway', 'medical_center', 'movie_theater',
-  'museum', 'night_club', 'park', 'parking', 'pet_store', 'pharmacy', 'physiotherapist',
-  'plumber', 'police', 'post_office', 'primary_school', 'real_estate_agency', 'restaurant',
-  'roofing_contractor', 'rv_park', 'secondary_school', 'shoe_store', 'shopping_mall', 'spa',
-  'stadium', 'storage', 'store', 'subway_station', 'supermarket', 'tourist_attraction',
-  'train_station', 'transit_station', 'travel_agency', 'university', 'veterinary_care', 'zoo'
+  'accounting', 'airport', 'amusement_park', 'aquarium', 'art_gallery', 'atm',
+  'bakery', 'bank', 'bar', 'beauty_salon', 'bicycle_store', 'book_store',
+  'bowling_alley', 'bus_station', 'cafe', 'campground', 'car_dealer',
+  'car_rental', 'car_repair', 'car_wash', 'casino', 'cemetery', 'church',
+  'city_hall', 'clothing_store', 'convenience_store', 'courthouse', 'dentist',
+  'department_store', 'doctor', 'drugstore', 'electrician', 'electronics_store',
+  'embassy', 'fire_station', 'florist', 'funeral_home', 'furniture_store',
+  'gas_station', 'gym', 'hair_care', 'hardware_store', 'hindu_temple', 'hospital',
+  'insurance_agency', 'jewelry_store', 'laundry', 'lawyer', 'library',
+  'light_rail_station', 'liquor_store', 'local_government_office', 'locksmith',
+  'lodging', 'meal_delivery', 'mosque', 'movie_theater', 'moving_company',
+  'museum', 'night_club', 'painter', 'park', 'parking', 'pet_store', 'pharmacy',
+  'physiotherapist', 'plumber', 'police', 'post_office', 'primary_school',
+  'real_estate_agency', 'restaurant', 'roofing_contractor', 'rv_park', 'school',
+  'shoe_store', 'shopping_mall', 'spa', 'stadium', 'storage', 'store',
+  'subway_station', 'supermarket', 'synagogue', 'taxi_stand', 'tourist_attraction',
+  'train_station', 'transit_station', 'travel_agency', 'university',
+  'veterinary_care', 'zoo'
 ];
+
+export const PREFERENCE_TO_PLACE_TYPES: Record<string, string[]> = {
+  'Historical & Heritage Sites': ['museum', 'church', 'tourist_attraction', 'library'],
+  'Educational & Museum Visits': ['museum', 'library', 'university', 'art_gallery'],
+  'Local Food & Cafés': ['restaurant', 'cafe', 'bakery'],
+  'Shopping & Commercial Areas': ['shopping_mall', 'store', 'clothing_store', 'department_store'],
+  'Religious & Cultural Sites': ['church', 'mosque', 'hindu_temple', 'synagogue'],
+  'Sightseeing / Photo Spots': ['tourist_attraction', 'park', 'art_gallery', 'amusement_park', 'zoo'],
+  'Local Filipino Cuisine': ['restaurant'],
+  'Cafés & Coffee Shops': ['cafe', 'bakery'],
+  'Budget-friendly Eateries': ['restaurant', 'cafe'],
+  'Popular Local Spots': ['restaurant', 'tourist_attraction'],
+  'Quick Meals / Food Stops': ['restaurant', 'cafe']
+};
+
 
 export async function identifyIntent(userMessage: string, conversationHistory?: any[]): Promise<SearchIntent> {
   try {

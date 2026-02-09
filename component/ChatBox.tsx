@@ -5,7 +5,7 @@ import { processMessage, ChatResponse } from '@/services/chatService';
 import { usePlaces } from '@/context/PlacesContext';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import { SearchResult } from '@/services/searchService';
-import { PLACE_TYPES } from '@/services/intentService';
+import { PREFERENCE_TO_PLACE_TYPES } from '@/services/intentService';
 
 interface Message {
   id: string;
@@ -26,6 +26,7 @@ const ChatBox = () => {
   const selectedLodgingRef = useRef<{ displayName: string; location: { lat: number; lng: number } } | null>(null);
   const messageIdCounter = useRef(0);
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
+  const selectedPlaceTypesRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (inputFromMap && lodgingOptions.length > 0) {
@@ -126,6 +127,14 @@ const ChatBox = () => {
     setSelectedPreferences(prev => {
       const newPrefs = prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref];
       setInput(newPrefs.join(', '));
+      
+      const allTypes = new Set<string>();
+      newPrefs.forEach(p => {
+        const types = PREFERENCE_TO_PLACE_TYPES[p] || [];
+        types.forEach(t => allTypes.add(t));
+      });
+      selectedPlaceTypesRef.current = Array.from(allTypes);
+      
       return newPrefs;
     });
   };
