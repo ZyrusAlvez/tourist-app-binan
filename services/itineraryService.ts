@@ -36,26 +36,33 @@ async function generateDayPlan(
     messages: [
       {
         role: 'system',
-        content: `You are an expert itinerary planner for Biñan, Laguna. Create a detailed plan for Day ${dayNumber}, covering morning, lunch, afternoon, and evening. Avoid repeating any places already visited: ${visitedPlaces.join(', ')}. ${lodgingContext}. Prioritize user preferences: Places of Worship, Museums, Coffee Shops, Local Stops. Format the itinerary in a readable way, like:
+        content: `You are an expert itinerary planner for Biñan, Laguna. Create a realistic plan for Day ${dayNumber}. ${lodgingContext}
 
-Morning (8:00 AM – 12:00 PM)
-* Place 1 – description
-* Place 2 – description
+IMPORTANT RULES:
+- Vary the times for each day - don't use the same schedule every day
+- Be realistic about how many places can be visited in one day (typically 4-6 places total)
+- Consider travel time between locations
+- Don't force all available places into the itinerary if there isn't enough time
+- Quality over quantity - it's better to visit fewer places comfortably than rush through many
 
-Lunch (12:00 PM – 1:30 PM)
-* Place – description
+Format:
+Morning (vary start time: 7:00-9:00 AM)
+* Place – brief description
 
-Afternoon (1:30 PM – 5:00 PM)
-* Place 3 – description
+Lunch (vary time: 11:30 AM - 1:00 PM)
+* Place – brief description
 
-Evening (5:00 PM – 9:00 PM)
-* Place 4 – description
+Afternoon (vary time based on lunch)
+* Place – brief description
 
-Do NOT include raw coordinates.`
+Evening (vary time: 5:00-7:00 PM)
+* Place – brief description
+
+Start directly with the time blocks. No introductory text.`
       },
       {
         role: 'user',
-        content: `Here are the places you can use:\n${filteredPlacesContext}`
+        content: `Day ${dayNumber} of ${userData.days}-day trip. Available places:\n${filteredPlacesContext}\n\nAlready visited: ${visitedPlaces.join(', ') || 'none'}`
       }
     ],
     model: 'llama-3.3-70b-versatile',

@@ -165,11 +165,25 @@ const ChatBox = () => {
       addMessage('Generating your itinerary...', true);
     }, 500);
     
-    await generateItinerary(userDataRef.current);
+    const result = await generateItinerary(userDataRef.current);
     
+    // Show all places on map
+    const allPlaces = Object.values(result.searchResults.fullData).flat();
+    setSelectedPlaces(allPlaces);
+    
+    // Display itinerary in chat
     setTimeout(() => {
-      setMessages(prev => prev.filter(m => m.text !== 'Generating your itinerary...'));
-      addMessage('Your itinerary is ready!', true);
+      setMessages(prev => {
+        const filtered = prev.filter(m => m.text !== 'Generating your itinerary...');
+        const newMessages = Object.entries(result.itinerary).map(([day, plan], index) => ({
+          id: `msg-${messageIdCounter.current + index + 1}`,
+          text: `Day ${day}:\n${plan}`,
+          isBot: true
+        }));
+        messageIdCounter.current += newMessages.length;
+        return [...filtered, ...newMessages];
+      });
+      
       setStep('done');
     }, 1000);
   };
