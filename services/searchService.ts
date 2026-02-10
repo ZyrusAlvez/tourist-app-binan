@@ -176,6 +176,5 @@ export async function searchByPreferences(userData: UserData){
             location: p.location
         }));
     }
-    
-    return { fullData, simpleData };
+    return { userData, fullData, simpleData };
 }
