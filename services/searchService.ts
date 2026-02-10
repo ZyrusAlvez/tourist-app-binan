@@ -158,10 +158,10 @@ export async function searchNearPlaces(
   return allPlaces;
 }
 
-type SimplifiedPlace = {
+export interface SimplifiedPlace {
   displayName: string;
   location: { lat: number; lng: number };
-};
+}
 
 export async function searchByPreferences(placeTypes: Record<string, string[]>) {
     const fullData: Record<string, SearchResult[]> = {};
