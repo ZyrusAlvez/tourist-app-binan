@@ -177,7 +177,7 @@ const ChatBox = () => {
         const filtered = prev.filter(m => m.text !== 'Generating your itinerary...');
         const newMessages = Object.entries(result.itinerary).map(([day, plan], index) => ({
           id: `msg-${messageIdCounter.current + index + 1}`,
-          text: `Day ${day}:\n${plan}`,
+          text: `Day ${day}:\n\n${plan}`,
           isBot: true
         }));
         messageIdCounter.current += newMessages.length;
@@ -271,13 +271,13 @@ const ChatBox = () => {
               className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
             >
               <div
-                className={`max-w-xs px-4 py-2 rounded-2xl ${
+                className={`max-w-2xl px-4 py-2 rounded-2xl ${
                   message.isBot
                     ? 'bg-white text-gray-800 border border-gray-200'
                     : 'bg-blue-500 text-white'
                 }`}
               >
-                <p className="text-sm">{message.text}</p>
+                <p className="text-sm whitespace-pre-line">{message.text}</p>
               </div>
             </div>
           ))}
