@@ -1,4 +1,5 @@
 import { isPointInPolygon } from '@/utility/validator';
+import { UserData } from "@/component/ChatBox";
 
 export interface SearchResult {
   displayName: string;
@@ -155,4 +156,26 @@ export async function searchNearPlaces(
   console.log('Returning nearby search results:', allPlaces.length);
   allPlaces.sort((a, b) => (b.rating || 0) - (a.rating || 0));
   return allPlaces;
+}
+
+type SimplifiedPlace = {
+  displayName: string;
+  location: { lat: number; lng: number };
+};
+
+export async function searchByPreferences(userData: UserData){
+    const fullData: Record<string, SearchResult[]> = {};
+    const simpleData: Record<string, SimplifiedPlace[]> = {};
+
+    for(const preference in userData.placeTypes){
+        const types = userData.placeTypes[preference];
+        const places = await searchAllPlaces(types);
+        fullData[preference] = places;
+        simpleData[preference] = places.map(p => ({
+            displayName: p.displayName,
+            location: p.location
+        }));
+    }
+    
+    return { fullData, simpleData };
 }
