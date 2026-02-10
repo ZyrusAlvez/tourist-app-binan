@@ -28,7 +28,7 @@ const ChatBox = () => {
   const userDataRef = useRef({
     lodging: null as { displayName: string; location: { lat: number; lng: number } } | null,
     days: 0,
-    placeTypes: [] as string[]
+    placeTypes: {} as Record<string, string[]>
   });
 
   useEffect(() => {
@@ -137,12 +137,11 @@ const ChatBox = () => {
       const newPrefs = prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref];
       setInput(newPrefs.join(', '));
       
-      const allTypes = new Set<string>();
+      const placeTypesObj: Record<string, string[]> = {};
       newPrefs.forEach(p => {
-        const types = PREFERENCE_TO_PLACE_TYPES[p] || [];
-        types.forEach(t => allTypes.add(t));
+        placeTypesObj[p] = PREFERENCE_TO_PLACE_TYPES[p] || [];
       });
-      userDataRef.current.placeTypes = Array.from(allTypes);
+      userDataRef.current.placeTypes = placeTypesObj;
       
       return newPrefs;
     });
