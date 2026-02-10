@@ -6,11 +6,18 @@ import { usePlaces } from '@/context/PlacesContext';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import { SearchResult } from '@/services/searchService';
 import { PREFERENCE_TO_PLACE_TYPES } from '@/services/intentService';
+import { itineraryGenerator } from '@/services/itineraryService';
 
 interface Message {
   id: string;
   text: string;
   isBot: boolean;
+}
+
+export interface UserData {
+  lodging: { displayName: string; location: { lat: number; lng: number } } | null;
+  days: number;
+  placeTypes: Record<string, string[]>;
 }
 
 const ChatBox = () => {
@@ -25,10 +32,10 @@ const ChatBox = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageIdCounter = useRef(0);
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
-  const userDataRef = useRef({
-    lodging: null as { displayName: string; location: { lat: number; lng: number } } | null,
+  const userDataRef = useRef<UserData>({
+    lodging: null,
     days: 0,
-    placeTypes: {} as Record<string, string[]>
+    placeTypes: {}
   });
 
   useEffect(() => {
@@ -147,13 +154,24 @@ const ChatBox = () => {
     });
   };
 
-  const handlePreferencesSubmit = () => {
+  const handlePreferencesSubmit = async () => {
     if (selectedPreferences.length === 0) return;
     addMessage(selectedPreferences.join(', '), false);
     setInput('');
     setSelectedPreferences([]);
-    console.log('User Data:', userDataRef.current);
-    setStep('done');
+    setStep('transitioning');
+    
+    setTimeout(() => {
+      addMessage('Generating your itinerary...', true);
+    }, 500);
+    
+    await itineraryGenerator(userDataRef.current);
+    
+    setTimeout(() => {
+      setMessages(prev => prev.filter(m => m.text !== 'Generating your itinerary...'));
+      addMessage('Your itinerary is ready!', true);
+      setStep('done');
+    }, 1000);
   };
 
   const searchPlaces = async (query: string) => {
