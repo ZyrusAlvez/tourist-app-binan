@@ -163,18 +163,24 @@ type SimplifiedPlace = {
   location: { lat: number; lng: number };
 };
 
-export async function searchByPreferences(userData: UserData){
+export async function searchByPreferences(placeTypes: Record<string, string[]>) {
     const fullData: Record<string, SearchResult[]> = {};
     const simpleData: Record<string, SimplifiedPlace[]> = {};
 
-    for(const preference in userData.placeTypes){
-        const types = userData.placeTypes[preference];
+    for(const preference in placeTypes){
+        const types = placeTypes[preference];
         const places = await searchAllPlaces(types);
-        fullData[preference] = places;
-        simpleData[preference] = places.map(p => ({
+        
+        // Remove duplicates based on displayName
+        const uniquePlaces = places.filter((place, index, self) => 
+            index === self.findIndex(p => p.displayName === place.displayName)
+        );
+        
+        fullData[preference] = uniquePlaces;
+        simpleData[preference] = uniquePlaces.map(p => ({
             displayName: p.displayName,
             location: p.location
         }));
     }
-    return { userData, fullData, simpleData };
+    return { fullData, simpleData };
 }

@@ -6,7 +6,7 @@ import { usePlaces } from '@/context/PlacesContext';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import { SearchResult } from '@/services/searchService';
 import { PREFERENCE_TO_PLACE_TYPES } from '@/services/intentService';
-import { searchByPreferences } from '@/services/searchService';
+import { generateItinerary } from '@/services/itineraryService';
 
 interface Message {
   id: string;
@@ -165,7 +165,7 @@ const ChatBox = () => {
       addMessage('Generating your itinerary...', true);
     }, 500);
     
-    await searchByPreferences(userDataRef.current);
+    await generateItinerary(userDataRef.current);
     
     setTimeout(() => {
       setMessages(prev => prev.filter(m => m.text !== 'Generating your itinerary...'));
