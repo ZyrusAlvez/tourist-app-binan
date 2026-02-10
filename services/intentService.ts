@@ -31,17 +31,19 @@ export const PLACE_TYPES = [
 ];
 
 export const PREFERENCE_TO_PLACE_TYPES: Record<string, string[]> = {
-  'Historical & Heritage Sites': ['museum', 'church', 'tourist_attraction', 'library'],
-  'Educational & Museum Visits': ['museum', 'library', 'university', 'art_gallery'],
-  'Local Food & Cafés': ['restaurant', 'cafe', 'bakery'],
-  'Shopping & Commercial Areas': ['shopping_mall', 'store', 'clothing_store', 'department_store'],
-  'Religious & Cultural Sites': ['church', 'mosque', 'hindu_temple', 'synagogue'],
-  'Sightseeing / Photo Spots': ['tourist_attraction', 'park', 'art_gallery', 'amusement_park', 'zoo'],
-  'Local Filipino Cuisine': ['restaurant'],
-  'Cafés & Coffee Shops': ['cafe', 'bakery'],
-  'Budget-friendly Eateries': ['restaurant', 'cafe'],
-  'Popular Local Spots': ['restaurant', 'tourist_attraction'],
-  'Quick Meals / Food Stops': ['restaurant', 'cafe']
+  'Restaurants': ['restaurant'],
+  'Museums': ['museum', 'art_gallery', 'library'],
+  'Coffee Shops': ['cafe', 'bakery'],
+  'Shopping Centers': ['shopping_mall', 'department_store', 'clothing_store'],
+  'Place of Worship': ['church', 'mosque', 'hindu_temple', 'synagogue'],
+  'Attractions': ['tourist_attraction', 'amusement_park', 'zoo', 'aquarium'],
+  'Local Stops': [
+    'store',
+    'convenience_store',
+    'supermarket',
+    'park',
+    'shopping_mall'
+  ]
 };
 
 

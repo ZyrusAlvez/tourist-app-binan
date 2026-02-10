@@ -304,44 +304,21 @@ const ChatBox = () => {
           )}
           
           {step === 'preferences' && (
-            <>
-              <div className="flex flex-col gap-2">
-                <p className="text-xs text-gray-600 font-semibold">Core</p>
-                <div className="flex flex-wrap gap-2">
-                  {['Historical & Heritage Sites', 'Educational & Museum Visits', 'Local Food & Cafés', 'Shopping & Commercial Areas', 'Religious & Cultural Sites', 'Sightseeing / Photo Spots'].map(pref => (
-                    <button
-                      key={pref}
-                      onClick={() => togglePreference(pref)}
-                      className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
-                        selectedPreferences.includes(pref)
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
-                      }`}
-                    >
-                      {pref}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <p className="text-xs text-gray-600 font-semibold">Food Focus</p>
-                <div className="flex flex-wrap gap-2">
-                  {['Local Filipino cuisine', 'Cafés & coffee shops', 'Budget-friendly eateries', 'Popular local spots', 'Quick meals / food stops'].map(pref => (
-                    <button
-                      key={pref}
-                      onClick={() => togglePreference(pref)}
-                      className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
-                        selectedPreferences.includes(pref)
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
-                      }`}
-                    >
-                      {pref}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
+            <div className="flex flex-wrap gap-2 justify-end">
+              {Object.keys(PREFERENCE_TO_PLACE_TYPES).map(pref => (
+                <button
+                  key={pref}
+                  onClick={() => togglePreference(pref)}
+                  className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
+                    selectedPreferences.includes(pref)
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
+                  }`}
+                >
+                  {pref}
+                </button>
+              ))}
+            </div>
           )}
           <div ref={messagesEndRef} />
         </div>
