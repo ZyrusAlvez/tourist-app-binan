@@ -256,14 +256,14 @@ const ChatBox = () => {
               <button
                 onClick={() => handleInitialChoice('tourist')}
                 disabled={!isGoogleMapsReady || isLoading}
-                className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
               >
                 Tourist
               </button>
               <button
                 onClick={() => handleInitialChoice('local')}
                 disabled={!isGoogleMapsReady || isLoading}
-                className="px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
               >
                 Local
               </button>
@@ -275,14 +275,14 @@ const ChatBox = () => {
               <button
                 onClick={() => handleHotelChoice('yes')}
                 disabled={isLoading}
-                className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
               >
                 Yes
               </button>
               <button
                 onClick={() => handleHotelChoice('no')}
                 disabled={isLoading}
-                className="px-6 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
               >
                 No
               </button>
@@ -295,7 +295,7 @@ const ChatBox = () => {
                 <button
                   key={idx}
                   onClick={() => handleLodgingSelect(lodging)}
-                  className="px-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                  className="px-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm cursor-pointer"
                 >
                   {lodging.displayName}
                 </button>
@@ -309,7 +309,7 @@ const ChatBox = () => {
                 <button
                   key={pref}
                   onClick={() => togglePreference(pref)}
-                  className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
+                  className={`px-3 py-1.5 text-xs rounded-full border transition-colors cursor-pointer ${
                     selectedPreferences.includes(pref)
                       ? 'bg-blue-500 text-white border-blue-500'
                       : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
@@ -358,7 +358,7 @@ const ChatBox = () => {
               else handleSendMessage();
             }}
             disabled={(step !== 'done' && step !== 'lodging' && step !== 'days' && step !== 'preferences') || isLoading || !input.trim()}
-            className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
           >
             Send
           </button>
