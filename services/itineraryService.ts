@@ -2,12 +2,11 @@ import { searchByPreferences, SimplifiedPlace } from "./searchService";
 import { UserData } from "@/component/ChatBox";
 import groq from '@/lib/groq';
 
-// Helper: flatten all places used so far
+// Helper: Extract place names from itinerary (first part before dash)
 function flattenVisitedPlaces(itinerary: Record<number, string>): string[] {
   return Object.values(itinerary)
     .flatMap(dayPlan => {
-      // Extract place names from previous day's plan (simple regex for "* Place Name")
-      const matches = dayPlan.match(/\* ([^\n]+)/g);
+      const matches = dayPlan.match(/\* ([^–\-\n]+)/g);
       return matches?.map(m => m.replace('* ', '').trim()) || [];
     });
 }
@@ -98,6 +97,27 @@ export async function itineraryPlanner(
 export async function generateItinerary(userData: UserData) {
   const searchResults = await searchByPreferences(userData.placeTypes);
   const itinerary = await itineraryPlanner(userData, searchResults.simpleData);
-  console.log({ searchResults, itinerary });
-  return { searchResults, itinerary };
+  
+  // Extract all mentioned place names from itinerary
+  const mentionedPlaces = flattenVisitedPlaces(itinerary);
+  
+  // Filter searchResults to only include mentioned places
+  const filteredFullData: typeof searchResults.fullData = {};
+  Object.entries(searchResults.fullData).forEach(([category, places]) => {
+    filteredFullData[category] = places.filter(place => 
+      mentionedPlaces.some(mentioned => {
+        const placeName = place.displayName.toLowerCase();
+        const mentionedName = mentioned.toLowerCase();
+        return placeName === mentionedName || placeName.includes(mentionedName) && mentionedName.length > 5;
+      })
+    );
+  });
+  
+  const filteredSearchResults = {
+    fullData: filteredFullData,
+    simpleData: searchResults.simpleData
+  };
+  
+  console.log({ searchResults: filteredSearchResults, itinerary });
+  return { searchResults: filteredSearchResults, itinerary };
 }
