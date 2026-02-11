@@ -9,18 +9,25 @@ const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 const Page = () => {
   return (
-    <APIProvider apiKey={API_KEY}>
-      <PlacesProvider>
-        <div className="flex h-screen">
-          <div className="w-[60%]">
-            <CityMap />
+    <>
+      <div className='h-screen'>
+
+      </div>
+
+
+      {/* <APIProvider apiKey={API_KEY}>
+        <PlacesProvider>
+          <div className="flex h-screen">
+            <div className="w-[60%]">
+              <CityMap />
+            </div>
+            <div className="w-[40%]">
+              <ChatBox />
+            </div>
           </div>
-          <div className="w-[40%]">
-            <ChatBox />
-          </div>
-        </div>
-      </PlacesProvider>
-    </APIProvider>
+        </PlacesProvider>
+      </APIProvider> */}
+    </>
   )
 }
 
