@@ -5,14 +5,17 @@ import { PlacesProvider } from '@/context/PlacesContext';
 import CityMap from '../component/CityMap';
 import ChatBox from '../component/ChatBox';
 
+import GetStarted from '@/component/Scene/GetStarted';
+
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 const Page = () => {
   return (
-    <>
-      <div className='h-screen'>
+    <div className='h-screen'>
+      
+      <GetStarted />
 
-      </div>
+      
 
 
       {/* <APIProvider apiKey={API_KEY}>
@@ -27,7 +30,7 @@ const Page = () => {
           </div>
         </PlacesProvider>
       </APIProvider> */}
-    </>
+    </div>
   )
 }
 
