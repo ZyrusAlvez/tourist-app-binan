@@ -1,1 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Moon+Dance&display=swap');
 @import "tailwindcss";
+
+.moon-dance {
+  font-family: "Moon Dance", cursive;
+}
