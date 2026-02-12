@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { PlacesProvider } from '@/context/PlacesContext';
 import CityMap from '../component/CityMap';
@@ -11,13 +12,15 @@ import DataInput from '@/component/Home/DataInput';
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 const Page = () => {
+  const [started, setStarted] = useState(false);
+
   return (
     <div className='h-screen'>
-      
-      <DataInput />
-      
-      
-
+      {!started ? (
+        <GetStarted onGetStarted={() => setStarted(true)} />
+      ) : (
+        <DataInput />
+      )}
 
       {/* <APIProvider apiKey={API_KEY}>
         <PlacesProvider>

@@ -1,6 +1,10 @@
 import ButtonStarted from "../UI/ButtonStarted"
 
-const GetStarted = () => {
+interface GetStartedProps {
+  onGetStarted: () => void;
+}
+
+const GetStarted = ({ onGetStarted }: GetStartedProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6">
       <div className="h-16" />
@@ -12,7 +16,7 @@ const GetStarted = () => {
           Web-Based Travel Guide Planner for Local Exploration and Tourism
         </h2>
 
-        <ButtonStarted>Get Started</ButtonStarted>
+        <ButtonStarted onClick={onGetStarted}>Get Started</ButtonStarted>
       </div>
     </div>
   )
