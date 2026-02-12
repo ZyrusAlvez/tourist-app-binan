@@ -1,5 +1,4 @@
 import { isPointInPolygon } from '@/utility/validator';
-import { UserData } from "@/component/ChatBox";
 
 export interface SearchResult {
   displayName: string;

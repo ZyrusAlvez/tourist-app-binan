@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { FaWalking, FaBiking, FaCar, FaBus, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { IoSparkles } from "react-icons/io5"
+import { generateItinerary } from '@/services/itineraryService'
 
 const TRANSPORT_MODES = [
   { id: 'walk', label: 'Walk', icon: FaWalking },
@@ -28,7 +29,11 @@ export interface UserInput {
   placeTypes: Record<string, string[]>;
 }
 
-export default function DataInput() {
+interface DataInputProps {
+  onGenerate: (userInput: UserInput) => void;
+}
+
+export default function DataInput({ onGenerate }: DataInputProps) {
   const [days, setDays] = useState(1)
   const [transport, setTransport] = useState('')
   const [categories, setCategories] = useState<string[]>([])
@@ -61,6 +66,8 @@ export default function DataInput() {
     }
 
     console.log('User Input:', JSON.stringify(userInputRef.current, null, 2))
+    
+    onGenerate(userInputRef.current)
   }
 
   return (
