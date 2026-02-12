@@ -1,6 +1,27 @@
 import { searchByPreferences, SimplifiedPlace } from "./searchService";
-import { UserData } from "@/component/ChatBox";
+import { UserInput } from "@/component/Home/DataInput";
 import groq from '@/lib/groq';
+
+// Helper: Find closest hotel to other selected places
+function findClosestHotel(
+  hotels: SimplifiedPlace[],
+  allPlaces: SimplifiedPlace[]
+): SimplifiedPlace | undefined {
+  if (!hotels.length || !allPlaces.length) return hotels[0];
+
+  // Calculate average distance from each hotel to all other places
+  const hotelScores = hotels.map(hotel => {
+    const totalDistance = allPlaces.reduce((sum, place) => {
+      const latDiff = hotel.location.lat - place.location.lat;
+      const lngDiff = hotel.location.lng - place.location.lng;
+      return sum + Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
+    }, 0);
+    return { hotel, avgDistance: totalDistance / allPlaces.length };
+  });
+
+  // Return hotel with smallest average distance
+  return hotelScores.sort((a, b) => a.avgDistance - b.avgDistance)[0].hotel;
+}
 
 // Helper: Extract place names from itinerary (first part before dash)
 function flattenVisitedPlaces(itinerary: Record<number, string>): string[] {
@@ -14,16 +35,15 @@ function flattenVisitedPlaces(itinerary: Record<number, string>): string[] {
 // Generate a single day plan
 async function generateDayPlan(
   dayNumber: number,
-  userData: UserData,
+  userData: UserInput,
   simplifiedData: Record<string, SimplifiedPlace[]>,
-  visitedPlaces: string[]
+  visitedPlaces: string[],
+  hotelName?: string
 ): Promise<string> {
-  const lodgingContext = userData.lodging 
-    ? `The user is staying at ${userData.lodging.displayName}. Prioritize places closer to this lodging.`
-    : 'The user has no specific lodging. Plan routes efficiently.';
 
-  // Filter out already visited places
+  // Filter out already visited places (excluding hotel)
   const filteredPlacesContext = Object.entries(simplifiedData)
+    .filter(([category]) => category !== 'Hotels') // Exclude hotels from daily visits
     .map(([category, places]) => {
       const remaining = places.filter(p => !visitedPlaces.includes(p.displayName));
       return `${category}: ${remaining.map(p => p.displayName).join(', ')}`;
@@ -31,13 +51,18 @@ async function generateDayPlan(
     .filter(line => line.split(': ')[1] !== '') // remove empty categories
     .join('\n');
 
+  const hotelContext = hotelName 
+    ? `The user is staying at ${hotelName}. Start the day from this hotel and return here at the end of the day.`
+    : '';
+
   const completion = await groq.chat.completions.create({
     messages: [
       {
         role: 'system',
-        content: `You are an expert itinerary planner for Biñan, Laguna. Create a realistic plan for Day ${dayNumber}. ${lodgingContext}
+        content: `You are an expert itinerary planner for Biñan, Laguna. Create a realistic plan for Day ${dayNumber}. ${hotelContext}
 
 IMPORTANT RULES:
+- ${hotelName ? `Start from ${hotelName} in the morning and return there in the evening` : 'Plan the day efficiently'}
 - Vary the times for each day - don't use the same schedule every day
 - Be realistic about how many places can be visited in one day (typically 4-6 places total)
 - Consider travel time between locations
@@ -46,6 +71,7 @@ IMPORTANT RULES:
 
 Format:
 Morning (vary start time: 7:00-9:00 AM)
+${hotelName ? `* Depart from ${hotelName}` : ''}
 * Place – brief description
 
 Lunch (vary time: 11:30 AM - 1:00 PM)
@@ -56,6 +82,7 @@ Afternoon (vary time based on lunch)
 
 Evening (vary time: 5:00-7:00 PM)
 * Place – brief description
+${hotelName ? `* Return to ${hotelName}` : ''}
 
 Start directly with the time blocks. No introductory text.`
       },
@@ -73,16 +100,27 @@ Start directly with the time blocks. No introductory text.`
 }
 
 // Main planner for multiple days
-export async function itineraryPlanner(
-  userData: UserData,
+async function itineraryPlanner(
+  userData: UserInput,
   simplifiedData: Record<string, SimplifiedPlace[]>
 ): Promise<Record<number, string>> {
   try {
     const itinerary: Record<number, string> = {};
+    
+    // Check if user selected Hotels and pick the closest one to other preferences
+    let hotelName: string | undefined;
+    if (simplifiedData['Hotels']?.length) {
+      const allOtherPlaces = Object.entries(simplifiedData)
+        .filter(([category]) => category !== 'Hotels')
+        .flatMap(([_, places]) => places);
+      
+      const closestHotel = findClosestHotel(simplifiedData['Hotels'], allOtherPlaces);
+      hotelName = closestHotel?.displayName;
+    }
 
     for (let day = 1; day <= userData.days; day++) {
       const visitedPlaces = flattenVisitedPlaces(itinerary); // track used places
-      const dayPlan = await generateDayPlan(day, userData, simplifiedData, visitedPlaces);
+      const dayPlan = await generateDayPlan(day, userData, simplifiedData, visitedPlaces, hotelName);
       itinerary[day] = dayPlan;
     }
 
@@ -94,7 +132,7 @@ export async function itineraryPlanner(
 }
 
 // Main entry function
-export async function generateItinerary(userData: UserData) {
+export async function generateItinerary(userData: UserInput) {
   const searchResults = await searchByPreferences(userData.placeTypes);
   const itinerary = await itineraryPlanner(userData, searchResults.simpleData);
   
