@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { FaWalking, FaBiking, FaCar, FaBus, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { IoSparkles } from "react-icons/io5"
 
@@ -22,10 +22,22 @@ const PREFERENCE_TO_PLACE_TYPES: Record<string, string[]> = {
   'Local Stops': ['store', 'convenience_store', 'supermarket', 'park', 'shopping_mall']
 }
 
+export interface UserInput {
+  transportationMode: string;
+  days: number;
+  placeTypes: Record<string, string[]>;
+}
+
 export default function DataInput() {
   const [days, setDays] = useState(1)
   const [transport, setTransport] = useState('')
   const [categories, setCategories] = useState<string[]>([])
+  
+  const userInputRef = useRef<UserInput>({
+    transportationMode: '',
+    days: 0,
+    placeTypes: {}
+  })
   
   const categoryOptions = Object.keys(PREFERENCE_TO_PLACE_TYPES)
   const isComplete = days > 0 && transport && categories.length > 0
@@ -34,6 +46,21 @@ export default function DataInput() {
     setCategories(prev => 
       prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
     )
+  }
+
+  const handleGenerate = () => {
+    const selectedPlaceTypes = categories.reduce((acc, cat) => {
+      acc[cat] = PREFERENCE_TO_PLACE_TYPES[cat]
+      return acc
+    }, {} as Record<string, string[]>)
+
+    userInputRef.current = {
+      transportationMode: transport,
+      days,
+      placeTypes: selectedPlaceTypes
+    }
+
+    console.log('User Input:', JSON.stringify(userInputRef.current, null, 2))
   }
 
   return (
@@ -161,6 +188,7 @@ export default function DataInput() {
           {/* Generate Button */}
           <button
             disabled={!isComplete}
+            onClick={handleGenerate}
             className={`w-full py-3.5 sm:py-4 lg:py-5 rounded-xl font-semibold text-sm sm:text-base lg:text-lg transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 ${
               isComplete
                 ? 'bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-xl shadow-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/40 active:scale-[0.98]'
