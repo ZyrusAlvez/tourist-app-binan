@@ -30,21 +30,7 @@ export const PLACE_TYPES = [
   'veterinary_care', 'zoo'
 ];
 
-export const PREFERENCE_TO_PLACE_TYPES: Record<string, string[]> = {
-  'Restaurants': ['restaurant'],
-  'Museums': ['museum', 'art_gallery', 'library'],
-  'Coffee Shops': ['cafe', 'bakery'],
-  'Shopping Centers': ['shopping_mall', 'department_store', 'clothing_store'],
-  'Place of Worship': ['church', 'mosque', 'hindu_temple', 'synagogue'],
-  'Attractions': ['tourist_attraction', 'amusement_park', 'zoo', 'aquarium'],
-  'Local Stops': [
-    'store',
-    'convenience_store',
-    'supermarket',
-    'park',
-    'shopping_mall'
-  ]
-};
+
 
 
 export async function identifyIntent(userMessage: string, conversationHistory?: any[]): Promise<SearchIntent> {
