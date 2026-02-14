@@ -32,7 +32,7 @@ const GetDay = () => {
       <div className='min-h-[calc(100vh-4rem)] flex items-center justify-center flex-col gap-12 px-4 py-12'>
         {/* Header */}
         <div className="text-center space-y-4 max-w-xl">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold bg-linear-to-r from-orange-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
             Plan Your Adventure
           </h1>
           <p className="text-xl md:text-2xl text-gray-700 font-medium">
@@ -45,17 +45,17 @@ const GetDay = () => {
           <div className="relative">
             {/* Center indicator line */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent" />
+              <div className="w-full h-0.5 bg-linear-to-r from-transparent via-orange-400 to-transparent" />
             </div>
             
             {/* Fade overlays */}
             <div className="absolute inset-0 pointer-events-none z-10 rounded-2xl overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-white/80 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white/80 to-transparent" />
+              <div className="absolute top-0 left-0 right-0 h-40 bg-linear-to-b from-white/80 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 h-40 bg-linear-to-t from-white/80 to-transparent" />
             </div>
             
             <div 
-              className="relative w-32 h-[320px] cursor-grab active:cursor-grabbing select-none mx-auto"
+              className="relative w-32 h-80 cursor-grab active:cursor-grabbing select-none mx-auto"
               style={{ perspective: '1000px' }}
               onMouseDown={(e) => handleStart(e.clientY)}
               onMouseMove={(e) => e.buttons === 1 && handleMove(e.clientY)}
@@ -107,13 +107,13 @@ const GetDay = () => {
           <div className="relative">
             {/* Center indicator line */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <div className="w-0.5 h-full bg-gradient-to-b from-transparent via-orange-400 to-transparent" />
+              <div className="w-0.5 h-full bg-linear-to-b from-transparent via-orange-400 to-transparent" />
             </div>
             
             {/* Fade overlays */}
             <div className="absolute inset-0 pointer-events-none z-10 rounded-2xl overflow-hidden">
-              <div className="absolute top-0 left-0 bottom-0 w-48 bg-gradient-to-r from-white/80 to-transparent" />
-              <div className="absolute top-0 right-0 bottom-0 w-48 bg-gradient-to-l from-white/80 to-transparent" />
+              <div className="absolute top-0 left-0 bottom-0 w-48 bg-linear-to-r from-white/80 to-transparent" />
+              <div className="absolute top-0 right-0 bottom-0 w-48 bg-linear-to-l from-white/80 to-transparent" />
             </div>
             
             <div 
@@ -167,7 +167,7 @@ const GetDay = () => {
         {/* Bottom section */}
         <div className="text-center space-y-6">
           <div className="flex items-baseline justify-center gap-3">
-            <span className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="text-6xl md:text-7xl font-bold bg-linear-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
               {middleNumber}
             </span>
             <span className="text-3xl md:text-4xl text-gray-600 font-medium">
@@ -175,9 +175,9 @@ const GetDay = () => {
             </span>
           </div>
           
-          <button className="group relative px-10 py-4 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden">
+          <button className="group relative px-10 py-4 bg-linear-to-r from-orange-500 via-pink-500 to-purple-500 text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden">
             <span className="relative z-10">Create My Itinerary</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-linear-to-r from-purple-500 via-pink-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
         </div>
       </div>

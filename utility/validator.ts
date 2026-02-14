@@ -1,4 +1,4 @@
-import { cityBoundary } from "@/component/CityMap/boundary";
+import { cityBoundary } from "@/component/Home/ItineraryPlan/CityMap/boundary";
 
 export function isPointInPolygon(
   point: { lat: number; lng: number },

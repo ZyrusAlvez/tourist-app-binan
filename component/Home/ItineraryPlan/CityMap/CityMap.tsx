@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { Map } from '@vis.gl/react-google-maps';
 import { SearchResult } from '@/services/searchService';
-import PlaceInfoPanel from './PlaceInfoPanel';
+import PlaceInfoPanel from '../PlaceInfoPanel';
 import { UserInput } from '@/component/Home/DataInput';
-import MapContent from './CityMap/MapContent';
+import MapContent from './MapContent';
 
 const MAP_CONFIG = {
   mapId: "2d9f2830304c482319b65b18",
@@ -28,7 +28,7 @@ const CityMap = ({ userInput }: { userInput: UserInput }) => {
   const [selectedPlace, setSelectedPlace] = useState<SearchResult | null>(null);
 
   return (
-    <div className='flex h-screen'>
+    <>
       {selectedPlace && (
         <PlaceInfoPanel
           place={selectedPlace}
@@ -36,21 +36,19 @@ const CityMap = ({ userInput }: { userInput: UserInput }) => {
         />
       )}
 
-      <div className='flex-1'>
-        <Map
-          {...MAP_CONFIG}
-          gestureHandling="greedy"
-          disableDefaultUI={true}
-          style={{ width: '100%', height: '100%' }}
-        >
-          <MapContent
-            selectedPlace={selectedPlace}
-            setSelectedPlace={setSelectedPlace}
-            userInput={userInput}
-          />
-        </Map>
-      </div>
-    </div>
+      <Map
+        {...MAP_CONFIG}
+        gestureHandling="greedy"
+        disableDefaultUI={true}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <MapContent
+          selectedPlace={selectedPlace}
+          setSelectedPlace={setSelectedPlace}
+          userInput={userInput}
+        />
+      </Map>
+    </>
   );
 };
 

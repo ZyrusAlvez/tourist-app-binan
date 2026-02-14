@@ -20,7 +20,8 @@ const PREFERENCE_TO_PLACE_TYPES: Record<string, string[]> = {
   'Shopping Centers': ['shopping_mall', 'department_store', 'clothing_store'],
   'Place of Worship': ['church', 'mosque', 'hindu_temple', 'synagogue'],
   'Attractions': ['tourist_attraction', 'amusement_park', 'zoo', 'aquarium'],
-  'Local Stops': ['store', 'convenience_store', 'supermarket', 'park', 'shopping_mall']
+  'Local Stops': ['store', 'convenience_store', 'supermarket', 'shopping_mall'],
+  'Park' : ['park']
 }
 
 export interface UserInput {
