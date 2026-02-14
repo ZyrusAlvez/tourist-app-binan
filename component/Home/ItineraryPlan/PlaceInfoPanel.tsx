@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SearchResult } from '@/services/searchService';
+import { IoClose } from 'react-icons/io5';
 
 interface PlaceInfoPanelProps {
   place: SearchResult;
@@ -11,13 +12,13 @@ const PlaceInfoPanel = ({ place, onClose }: PlaceInfoPanelProps) => {
 
   return (
     <>
-      <div className='w-96 bg-white shadow-lg overflow-y-auto'>
-      <div className='p-4'>
+      <div className='h-full w-96 bg-white/95 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden flex flex-col'>
+      <div className='p-2 overflow-y-auto flex-1'>
         <button 
           onClick={onClose}
-          className='float-right text-gray-500 hover:text-gray-700'
+          className='cursor-pointer float-right text-orange-500 hover:text-orange-600 text-2xl'
         >
-          ✕
+          <IoClose />
         </button>
         
         <h2 className='text-xl font-bold text-gray-900 mb-2'>

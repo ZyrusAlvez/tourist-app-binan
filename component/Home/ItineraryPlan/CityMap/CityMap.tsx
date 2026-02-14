@@ -55,29 +55,29 @@ const CityMap = (props: CityMapProps) => {
   const [selectedPlace, setSelectedPlace] = useState<SearchResult | null>(null);
 
   return (
-    <div className='flex h-full w-full'>
-      {selectedPlace && (
-        <PlaceInfoPanel
-          place={selectedPlace}
-          onClose={() => setSelectedPlace(null)}
+    <div className='relative h-full w-full rounded-2xl overflow-hidden'>
+      <Map
+        {...MAP_CONFIG}
+        gestureHandling="greedy"
+        disableDefaultUI={true}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <MapWrapper {...props} />
+        <MapContent
+          places={props.places}
+          selectedPlace={selectedPlace}
+          setSelectedPlace={setSelectedPlace}
+          loading={props.loading}
         />
-      )}
-      <div className='flex-1 rounded-2xl overflow-hidden'>
-        <Map
-          {...MAP_CONFIG}
-          gestureHandling="greedy"
-          disableDefaultUI={true}
-          style={{ width: '100%', height: '100%' }}
-        >
-          <MapWrapper {...props} />
-          <MapContent
-            places={props.places}
-            selectedPlace={selectedPlace}
-            setSelectedPlace={setSelectedPlace}
-            loading={props.loading}
+      </Map>
+      {selectedPlace && (
+        <div className='absolute top-4 left-4 bottom-4 z-10 animate-in slide-in-from-left duration-300'>
+          <PlaceInfoPanel
+            place={selectedPlace}
+            onClose={() => setSelectedPlace(null)}
           />
-        </Map>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
