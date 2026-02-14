@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { Map } from '@vis.gl/react-google-maps';
+import { useState, useEffect } from 'react';
+import { Map, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { SearchResult } from '@/services/searchService';
-import PlaceInfoPanel from '../PlaceInfoPanel';
 import { UserInput } from '@/type/itinerary';
+import PlaceInfoPanel from '../PlaceInfoPanel';
 import MapContent from './MapContent';
+import { generateItinerary } from '@/services/itineraryService';
 
 const MAP_CONFIG = {
   mapId: "2d9f2830304c482319b65b18",
@@ -24,31 +25,60 @@ const MAP_CONFIG = {
   maxZoom: 21
 };
 
-const CityMap = ({ userInput }: { userInput: UserInput }) => {
+interface CityMapProps {
+  userInput: UserInput;
+  places: Record<string, SearchResult[]>;
+  loading: boolean;
+  setItinerary: (itinerary: Record<number, string>) => void;
+  setPlaces: (places: Record<string, SearchResult[]>) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+function MapWrapper({ userInput, places, loading, setItinerary, setPlaces, setLoading }: CityMapProps) {
+  const map = useMap();
+  const placesLib = useMapsLibrary('places');
+
+  useEffect(() => {
+    if (map && placesLib) {
+      generateItinerary(userInput).then(result => {
+        setItinerary(result.itinerary);
+        setPlaces(result.searchResults.fullData);
+        setLoading(false);
+      });
+    }
+  }, [map, placesLib, userInput, setItinerary, setPlaces, setLoading]);
+
+  return null;
+}
+
+const CityMap = (props: CityMapProps) => {
   const [selectedPlace, setSelectedPlace] = useState<SearchResult | null>(null);
 
   return (
-    <>
+    <div className='flex h-full w-full'>
       {selectedPlace && (
         <PlaceInfoPanel
           place={selectedPlace}
           onClose={() => setSelectedPlace(null)}
         />
       )}
-
-      <Map
-        {...MAP_CONFIG}
-        gestureHandling="greedy"
-        disableDefaultUI={true}
-        style={{ width: '100%', height: '100%' }}
-      >
-        <MapContent
-          selectedPlace={selectedPlace}
-          setSelectedPlace={setSelectedPlace}
-          userInput={userInput}
-        />
-      </Map>
-    </>
+      <div className='flex-1'>
+        <Map
+          {...MAP_CONFIG}
+          gestureHandling="greedy"
+          disableDefaultUI={true}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <MapWrapper {...props} />
+          <MapContent
+            places={props.places}
+            selectedPlace={selectedPlace}
+            setSelectedPlace={setSelectedPlace}
+            loading={props.loading}
+          />
+        </Map>
+      </div>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import { searchByPreferences, SimplifiedPlace } from "./searchService";
-import { UserInput } from "@/component/Home/DataInput/DataInput";
+import { UserInput } from "@/type/itinerary";
 import groq from '@/lib/groq';
 
 // Helper: Find closest hotel to other selected places
