@@ -113,7 +113,7 @@ Start directly with the time blocks. No introductory text.`
 async function itineraryPlanner(
   userData: UserInput,
   simplifiedData: Record<string, SimplifiedPlace[]>
-): Promise<Record<number, string>> {
+): Promise<{ itinerary: Record<number, string>; chosenHotelName?: string }> {
   try {
     const itinerary: Record<number, string> = {};
     
@@ -134,17 +134,17 @@ async function itineraryPlanner(
       itinerary[day] = dayPlan;
     }
 
-    return itinerary;
+    return { itinerary, chosenHotelName: hotelName };
   } catch (error) {
     console.error('Itinerary planner error:', error);
-    return {};
+    return { itinerary: {} };
   }
 }
 
 // Main entry function
 export async function generateItinerary(userData: UserInput) {
   const searchResults = await searchByPreferences(userData.placeTypes);
-  const itinerary = await itineraryPlanner(userData, searchResults.simpleData);
+  const { itinerary, chosenHotelName } = await itineraryPlanner(userData, searchResults.simpleData);
   
   // Extract all mentioned place names from itinerary
   const mentionedPlaces = flattenVisitedPlaces(itinerary);
@@ -152,13 +152,20 @@ export async function generateItinerary(userData: UserInput) {
   // Filter searchResults to only include mentioned places
   const filteredFullData: typeof searchResults.fullData = {};
   Object.entries(searchResults.fullData).forEach(([category, places]) => {
-    filteredFullData[category] = places.filter(place => 
-      mentionedPlaces.some(mentioned => {
-        const placeName = place.displayName.toLowerCase();
-        const mentionedName = mentioned.toLowerCase();
-        return placeName === mentionedName || placeName.includes(mentionedName) && mentionedName.length > 5;
-      })
-    );
+    // For Hotels, only include the chosen hotel
+    if (category === 'Hotels' && chosenHotelName) {
+      filteredFullData[category] = places.filter(place => 
+        place.displayName === chosenHotelName
+      );
+    } else {
+      filteredFullData[category] = places.filter(place => 
+        mentionedPlaces.some(mentioned => {
+          const placeName = place.displayName.toLowerCase();
+          const mentionedName = mentioned.toLowerCase();
+          return placeName === mentionedName || placeName.includes(mentionedName) && mentionedName.length > 5;
+        })
+      );
+    }
   });
   
   const filteredSearchResults = {
