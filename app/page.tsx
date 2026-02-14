@@ -5,9 +5,9 @@ import { APIProvider } from '@vis.gl/react-google-maps';
 import { PlacesProvider } from '@/context/PlacesContext';
 
 import GetStarted from '@/component/Home/GetStarted';
-import DataInput from '@/component/Home/DataInput';
+import DataInput from '@/component/Home/DataInput/DataInput';
 import ItineraryPlan from '@/component/Home/ItineraryPlan/ItineraryPlan';
-import { UserInput } from '@/component/Home/DataInput';
+import { UserInput } from '@/type/itinerary';
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Map } from '@vis.gl/react-google-maps';
 import { SearchResult } from '@/services/searchService';
 import PlaceInfoPanel from '../PlaceInfoPanel';
-import { UserInput } from '@/component/Home/DataInput';
+import { UserInput } from '@/type/itinerary';
 import MapContent from './MapContent';
 
 const MAP_CONFIG = {

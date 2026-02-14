@@ -5,7 +5,7 @@ import { AdvancedMarker, useMap, useMapsLibrary } from '@vis.gl/react-google-map
 import CityPolygon from './cityPolygon';
 import { usePlaces } from '@/context/PlacesContext';
 import { SearchResult } from '@/services/searchService';
-import { UserInput } from '@/component/Home/DataInput';
+import { UserInput } from '@/component/Home/DataInput/DataInput';
 import { generateItinerary } from '@/services/itineraryService';
 
 interface MapContentProps {

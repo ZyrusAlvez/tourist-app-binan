@@ -1,6 +1,6 @@
 'use client';
 
-import { UserInput } from '../DataInput';
+import { UserInput } from '@/type/itinerary';
 import CityMap from './CityMap/CityMap';
 import Dashboard from './Dashboard';
 
