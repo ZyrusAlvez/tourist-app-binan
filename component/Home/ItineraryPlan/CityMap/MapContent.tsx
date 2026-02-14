@@ -3,7 +3,6 @@
 import { AdvancedMarker } from '@vis.gl/react-google-maps';
 import CityPolygon from './cityPolygon';
 import { SearchResult } from '@/services/searchService';
-import Image from 'next/image';
 
 interface MapContentProps {
   places: Record<string, SearchResult[]>;
@@ -29,12 +28,13 @@ const MapContent = ({ places, selectedPlace, setSelectedPlace, loading }: MapCon
             position={place.location}
             onClick={() => handleMarkerClick(place)}
           >
-            <div className='bg-white rounded-full p-1 shadow-lg border-2 border-orange-500'>
-              <Image
+            <div className='bg-white rounded-full p-1 shadow-lg border-2 border-orange-500 cursor-pointer hover:scale-110 transition-transform'>
+              <img
                 src={`/place_type/${category}.png`}
                 alt={category}
                 width={24}
                 height={24}
+                className='w-6 h-6'
               />
             </div>
           </AdvancedMarker>
