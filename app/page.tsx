@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { PlacesProvider } from '@/context/PlacesContext';
 
-import GetStarted from '@/component/Home/GetStarted';
+import GetStarted from '@/component/Home/GetStarted/GetStarted';
 import DataInput from '@/component/Home/DataInput/DataInput';
 import ItineraryPlan from '@/component/Home/ItineraryPlan/ItineraryPlan';
 import { UserInput } from '@/type/itinerary';
