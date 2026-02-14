@@ -20,7 +20,7 @@ const ItineraryPlan = ({ userInput }: ItineraryPlanProps) => {
     <>
       <div className='relative h-screen w-full p-4 md:p-6'>
         <div className='flex flex-col lg:flex-row gap-4 h-full'>
-          <div className='flex-1 rounded-2xl overflow-hidden shadow-xl'>
+          <div className='flex-1 min-h-125 lg:min-h-0 rounded-2xl overflow-hidden shadow-xl'>
             <CityMap 
               userInput={userInput}
               places={places} 
@@ -30,7 +30,7 @@ const ItineraryPlan = ({ userInput }: ItineraryPlanProps) => {
               setLoading={setLoading}
             />
           </div>
-          <div className='lg:w-96 rounded-2xl overflow-hidden shadow-xl'>
+          <div className='lg:w-96 min-h-75 lg:min-h-0 rounded-2xl overflow-hidden shadow-xl'>
             <Dashboard itinerary={itinerary} loading={false} />
           </div>
         </div>
