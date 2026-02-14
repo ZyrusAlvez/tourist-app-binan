@@ -12,8 +12,6 @@ interface MapContentProps {
 }
 
 const MapContent = ({ places, selectedPlace, setSelectedPlace, loading }: MapContentProps) => {
-  if (loading) return <CityPolygon />;
-
   const handleMarkerClick = (place: SearchResult) => {
     setSelectedPlace(place);
   };
@@ -21,10 +19,10 @@ const MapContent = ({ places, selectedPlace, setSelectedPlace, loading }: MapCon
   return (
     <>
       <CityPolygon />
-      {Object.entries(places).map(([category, categoryPlaces]) =>
+      {!loading && Object.entries(places).map(([category, categoryPlaces]) =>
         categoryPlaces.map((place, index) => (
           <AdvancedMarker
-            key={`${place.displayName}-${index}`}
+            key={`${category}-${place.displayName}-${index}`}
             position={place.location}
             onClick={() => handleMarkerClick(place)}
           >
