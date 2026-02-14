@@ -44,7 +44,6 @@ export default function DataInput({ onGenerate }: DataInputProps) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-4xl">
-        <div className="h-16" />
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/50 p-5 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
           
           <GetDay days={days} setDays={setDays} />

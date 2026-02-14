@@ -10,7 +10,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="relative min-h-screen antialiased">
-        <Header />
         <Background />
 
         {/* Your Page Content */}

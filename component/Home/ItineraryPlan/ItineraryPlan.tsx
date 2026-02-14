@@ -18,19 +18,24 @@ const ItineraryPlan = ({ userInput }: ItineraryPlanProps) => {
 
   return (
     <>
-      <div className="h-16" />
-      <div className='relative flex h-screen w-full'>
-        <CityMap 
-          userInput={userInput}
-          places={places} 
-          loading={loading}
-          setItinerary={setItinerary}
-          setPlaces={setPlaces}
-          setLoading={setLoading}
-        />
-        <Dashboard itinerary={itinerary} loading={false} />
+      <div className='relative h-screen w-full p-4 md:p-6'>
+        <div className='flex flex-col lg:flex-row gap-4 h-full'>
+          <div className='flex-1 rounded-2xl overflow-hidden shadow-xl'>
+            <CityMap 
+              userInput={userInput}
+              places={places} 
+              loading={loading}
+              setItinerary={setItinerary}
+              setPlaces={setPlaces}
+              setLoading={setLoading}
+            />
+          </div>
+          <div className='lg:w-96 rounded-2xl overflow-hidden shadow-xl'>
+            <Dashboard itinerary={itinerary} loading={false} />
+          </div>
+        </div>
         {loading && (
-          <div className='absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50'>
+          <div className='absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-2xl'>
             <Loading />
           </div>
         )}

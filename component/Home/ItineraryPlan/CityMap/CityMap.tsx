@@ -62,7 +62,7 @@ const CityMap = (props: CityMapProps) => {
           onClose={() => setSelectedPlace(null)}
         />
       )}
-      <div className='flex-1'>
+      <div className='flex-1 rounded-2xl overflow-hidden'>
         <Map
           {...MAP_CONFIG}
           gestureHandling="greedy"

@@ -7,13 +7,18 @@ interface DashboardProps {
 
 const Dashboard = ({ itinerary }: DashboardProps) => {
   return (
-    <div className='w-96 bg-gray-100 p-4 overflow-y-auto'>
-      <h2 className='text-xl font-bold mb-4'>Itinerary Plan</h2>
-      <div className='space-y-4'>
+    <div className='h-full bg-white p-4 md:p-6 overflow-y-auto'>
+      <h2 className='text-lg md:text-xl font-semibold mb-4 text-gray-800'>Your Itinerary</h2>
+      <div className='space-y-3'>
         {Object.entries(itinerary).map(([day, plan]) => (
-          <div key={day} className='bg-white rounded-lg p-4 shadow'>
-            <h3 className='font-bold text-lg mb-2'>Day {day}</h3>
-            <div className='text-sm text-gray-700 whitespace-pre-line'>{plan}</div>
+          <div key={day} className='border-l-4 border-orange-400 bg-orange-50/50 rounded-r-lg p-3 md:p-4'>
+            <div className='flex items-center gap-2 mb-2'>
+              <div className='w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center text-white text-sm font-bold'>
+                {day}
+              </div>
+              <h3 className='font-semibold text-sm md:text-base text-gray-800'>Day {day}</h3>
+            </div>
+            <div className='text-xs md:text-sm text-gray-600 whitespace-pre-line leading-relaxed pl-10'>{plan}</div>
           </div>
         ))}
       </div>

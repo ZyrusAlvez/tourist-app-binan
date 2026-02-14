@@ -7,7 +7,6 @@ interface GetStartedProps {
 const GetStarted = ({ onGetStarted }: GetStartedProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6">
-      <div className="h-16" />
       <div className="text-center space-y-6 max-w-4xl">
         <h1 className="text-6xl md:text-7xl font-extrabold text-gray-900 tracking-tight moon-dance ">
           BIYAHENG BIÑAN
