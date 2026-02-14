@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import TextButton from './UI/TextButton'
+import TextButton from '@/component/UI/TextButton'
 
 const Header = () => {
   const pathname = usePathname()
