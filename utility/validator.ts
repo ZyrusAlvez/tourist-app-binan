@@ -21,5 +21,3 @@ export function isPointInPolygon(
 
   return inside;
 }
-
-console.log("hello")

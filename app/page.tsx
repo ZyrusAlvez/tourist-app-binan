@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { APIProvider } from '@vis.gl/react-google-maps';
-import { PlacesProvider } from '@/context/PlacesContext';
 
 import GetStarted from '@/component/Home/GetStarted/GetStarted';
 import DataInput from '@/component/Home/DataInput/DataInput';
@@ -29,9 +28,7 @@ const Page = () => {
         <DataInput onGenerate={handleGenerate} />
       ) : (
         <APIProvider apiKey={API_KEY}>
-          <PlacesProvider>
             <ItineraryPlan userInput={userInput!} />
-          </PlacesProvider>
         </APIProvider>
       )}
     </div>
