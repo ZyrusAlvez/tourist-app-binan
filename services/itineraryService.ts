@@ -55,6 +55,15 @@ async function generateDayPlan(
     ? `The user is staying at ${hotelName}. Start the day from this hotel and return here at the end of the day.`
     : '';
 
+  // Check if user selected food-related categories
+  const hasFoodCategories = Object.keys(simplifiedData).some(cat => 
+    cat === 'Restaurants' || cat === 'Coffee Shops' || cat === 'Local Stops'
+  );
+
+  const foodInstructions = hasFoodCategories
+    ? 'Use specific restaurant/cafe names from the available places for meals.'
+    : 'For meals, use generic descriptions like "Lunch at a local restaurant" or "Dinner at a nearby eatery" - DO NOT mention specific restaurant names.';
+
   const completion = await groq.chat.completions.create({
     messages: [
       {
@@ -68,6 +77,7 @@ IMPORTANT RULES:
 - Consider travel time between locations
 - Don't force all available places into the itinerary if there isn't enough time
 - Quality over quantity - it's better to visit fewer places comfortably than rush through many
+- ${foodInstructions}
 
 Format:
 Morning (vary start time: 7:00-9:00 AM)
