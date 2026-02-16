@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserInput } from '@/type/itinerary';
 import CityMap from './CityMap/CityMap';
 import Dashboard from './Dashboard';
@@ -15,6 +15,13 @@ const ItineraryPlan = ({ userInput }: ItineraryPlanProps) => {
   const [itinerary, setItinerary] = useState<Record<number, string>>({});
   const [places, setPlaces] = useState<Record<string, SearchResult[]>>({});
   const [loading, setLoading] = useState(true);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (Object.keys(itinerary).length > 0 && selectedDay === null) {
+      setSelectedDay(1);
+    }
+  }, [itinerary, selectedDay]);
 
   return (
     <>
@@ -25,6 +32,7 @@ const ItineraryPlan = ({ userInput }: ItineraryPlanProps) => {
               userInput={userInput}
               places={places}
               itinerary={itinerary}
+              selectedDay={selectedDay}
               loading={loading}
               setItinerary={setItinerary}
               setPlaces={setPlaces}
@@ -32,7 +40,12 @@ const ItineraryPlan = ({ userInput }: ItineraryPlanProps) => {
             />
           </div>
           <div className='lg:w-96 min-h-75 lg:min-h-0 rounded-2xl overflow-hidden shadow-xl'>
-            <Dashboard itinerary={itinerary} loading={false} />
+            <Dashboard 
+              itinerary={itinerary} 
+              loading={false}
+              selectedDay={selectedDay}
+              setSelectedDay={setSelectedDay}
+            />
           </div>
         </div>
         {loading && (

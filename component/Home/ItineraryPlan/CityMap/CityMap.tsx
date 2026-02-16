@@ -29,13 +29,14 @@ interface CityMapProps {
   userInput: UserInput;
   places: Record<string, SearchResult[]>;
   itinerary: Record<number, string>;
+  selectedDay: number | null;
   loading: boolean;
   setItinerary: (itinerary: Record<number, string>) => void;
   setPlaces: (places: Record<string, SearchResult[]>) => void;
   setLoading: (loading: boolean) => void;
 }
 
-function MapWrapper({ userInput, places, itinerary, loading, setItinerary, setPlaces, setLoading }: CityMapProps) {
+function MapWrapper({ userInput, places, itinerary, selectedDay, loading, setItinerary, setPlaces, setLoading }: CityMapProps) {
   const map = useMap();
   const placesLib = useMapsLibrary('places');
 
@@ -68,6 +69,7 @@ const CityMap = (props: CityMapProps) => {
           places={props.places}
           itinerary={props.itinerary}
           userInput={props.userInput}
+          selectedDay={props.selectedDay}
           selectedPlace={selectedPlace}
           setSelectedPlace={setSelectedPlace}
           loading={props.loading}

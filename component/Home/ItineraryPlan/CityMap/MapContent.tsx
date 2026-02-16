@@ -11,12 +11,13 @@ interface MapContentProps {
   places: Record<string, SearchResult[]>;
   itinerary: Record<number, string>;
   userInput: UserInput;
+  selectedDay: number | null;
   selectedPlace: SearchResult | null;
   setSelectedPlace: (place: SearchResult | null) => void;
   loading: boolean;
 }
 
-const MapContent = ({ places, itinerary, userInput, selectedPlace, setSelectedPlace, loading }: MapContentProps) => {
+const MapContent = ({ places, itinerary, userInput, selectedDay, selectedPlace, setSelectedPlace, loading }: MapContentProps) => {
   const map = useMap();
   const routesLib = useMapsLibrary('routes');
   const [directionsRenderers, setDirectionsRenderers] = useState<google.maps.DirectionsRenderer[]>([]);
@@ -33,6 +34,11 @@ const MapContent = ({ places, itinerary, userInput, selectedPlace, setSelectedPl
     const allPlaces = Object.values(places).flat();
 
     Object.entries(itinerary).forEach(([day, plan], dayIndex) => {
+      const dayNum = parseInt(day);
+      
+      // Only show route for selected day
+      if (selectedDay !== dayNum) return;
+
       const mentionedPlaces = plan.match(/\* ([^–\-\n]+)/g)?.map(m => m.replace('* ', '').trim()) || [];
       
       const dayPlaces: SearchResult[] = [];
@@ -78,8 +84,6 @@ const MapContent = ({ places, itinerary, userInput, selectedPlace, setSelectedPl
             }
           });
           newRenderers.push(renderer);
-        } else {
-          console.error(`Day ${day} route failed:`, status);
         }
       });
     });
@@ -89,7 +93,7 @@ const MapContent = ({ places, itinerary, userInput, selectedPlace, setSelectedPl
     return () => {
       newRenderers.forEach(renderer => renderer.setMap(null));
     };
-  }, [map, routesLib, places, itinerary, userInput, loading]);
+  }, [map, routesLib, places, itinerary, userInput, selectedDay, loading]);
 
   const handleMarkerClick = (place: SearchResult) => {
     setSelectedPlace(place);
@@ -99,23 +103,40 @@ const MapContent = ({ places, itinerary, userInput, selectedPlace, setSelectedPl
     <>
       <CityPolygon />
       {!loading && Object.entries(places).map(([category, categoryPlaces]) =>
-        categoryPlaces.map((place, index) => (
-          <AdvancedMarker
-            key={`${category}-${place.displayName}-${index}`}
-            position={place.location}
-            onClick={() => handleMarkerClick(place)}
-          >
-            <div className='bg-white rounded-full p-1 shadow-lg border-2 border-orange-500 cursor-pointer hover:scale-110 transition-transform'>
-              <img
-                src={`/place_type/${category}.png`}
-                alt={category}
-                width={24}
-                height={24}
-                className='w-6 h-6'
-              />
-            </div>
-          </AdvancedMarker>
-        ))
+        categoryPlaces.map((place, index) => {
+          // Check if this place is in the selected day's itinerary
+          if (selectedDay !== null) {
+            const dayPlan = itinerary[selectedDay];
+            if (!dayPlan) return null;
+            
+            const mentionedPlaces = dayPlan.match(/\* ([^–\-\n]+)/g)?.map(m => m.replace('* ', '').trim()) || [];
+            const isInSelectedDay = mentionedPlaces.some(mentioned => {
+              const placeName = place.displayName.toLowerCase();
+              const mentionedName = mentioned.toLowerCase();
+              return placeName.includes(mentionedName) || mentionedName.includes(placeName);
+            });
+            
+            if (!isInSelectedDay) return null;
+          }
+          
+          return (
+            <AdvancedMarker
+              key={`${category}-${place.displayName}-${index}`}
+              position={place.location}
+              onClick={() => handleMarkerClick(place)}
+            >
+              <div className='bg-white rounded-full p-1 shadow-lg border-2 border-orange-500 cursor-pointer hover:scale-110 transition-transform'>
+                <img
+                  src={`/place_type/${category}.png`}
+                  alt={category}
+                  width={24}
+                  height={24}
+                  className='w-6 h-6'
+                />
+              </div>
+            </AdvancedMarker>
+          );
+        })
       )}
     </>
   );
