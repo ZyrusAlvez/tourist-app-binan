@@ -20,15 +20,17 @@ interface MapContentProps {
 const MapContent = ({ places, itinerary, userInput, selectedDay, selectedPlace, setSelectedPlace, loading }: MapContentProps) => {
   const map = useMap();
   const routesLib = useMapsLibrary('routes');
+  const placesLib = useMapsLibrary('places');
   const [directionsRenderers, setDirectionsRenderers] = useState<google.maps.DirectionsRenderer[]>([]);
 
   useEffect(() => {
-    if (!map || !routesLib || loading || !Object.keys(itinerary).length || !Object.keys(places).length) return;
+    if (!map || !routesLib || !placesLib || loading || !Object.keys(itinerary).length || !Object.keys(places).length) return;
 
     directionsRenderers.forEach(renderer => renderer.setMap(null));
 
     const directionsService = new google.maps.DirectionsService();
     const newRenderers: google.maps.DirectionsRenderer[] = [];
+    const isTransitMode = userInput.transportationMode === 'transit';
 
     // Flatten all places into a single array
     const allPlaces = Object.values(places).flat();
@@ -57,34 +59,44 @@ const MapContent = ({ places, itinerary, userInput, selectedDay, selectedPlace, 
 
       if (dayPlaces.length < 2) return;
 
-      const waypoints = dayPlaces.slice(1, -1).map(place => ({
-        location: place.location,
-        stopover: true
-      }));
-
       const travelMode = userInput.transportationMode === 'walk' ? 'WALKING' :
                         userInput.transportationMode === 'bike' ? 'BICYCLING' :
                         userInput.transportationMode === 'transit' ? 'TRANSIT' : 'DRIVING';
 
-      directionsService.route({
-        origin: dayPlaces[0].location,
-        destination: dayPlaces[dayPlaces.length - 1].location,
-        waypoints,
-        travelMode: google.maps.TravelMode[travelMode as keyof typeof google.maps.TravelMode],
-      }, (result, status) => {
-        if (status === 'OK' && result) {
-          const renderer = new google.maps.DirectionsRenderer({
-            map,
-            directions: result,
-            suppressMarkers: true,
-            polylineOptions: {
-              strokeColor: DAY_COLORS[dayIndex % DAY_COLORS.length],
-              strokeWeight: 6,
-              strokeOpacity: 0.9
-            }
-          });
-          newRenderers.push(renderer);
-        }
+      const isTransit = travelMode === 'TRANSIT';
+      
+      // Transit mode only supports origin and destination (no waypoints)
+      const waypoints = isTransit ? [] : dayPlaces.slice(1, -1).map(place => ({
+        location: place.location,
+        stopover: true
+      }));
+
+      // For transit with multiple places, create separate routes
+      const routeSegments = isTransit && dayPlaces.length > 2 
+        ? dayPlaces.slice(0, -1).map((place, i) => [place, dayPlaces[i + 1]])
+        : [[dayPlaces[0], dayPlaces[dayPlaces.length - 1]]];
+
+      routeSegments.forEach(([origin, destination]) => {
+        directionsService.route({
+          origin: origin.location,
+          destination: destination.location,
+          waypoints: isTransit ? [] : waypoints,
+          travelMode: google.maps.TravelMode[travelMode as keyof typeof google.maps.TravelMode],
+        }, (result, status) => {
+          if (status === 'OK' && result) {
+            const renderer = new google.maps.DirectionsRenderer({
+              map,
+              directions: result,
+              suppressMarkers: true,
+              polylineOptions: {
+                strokeColor: DAY_COLORS[dayIndex % DAY_COLORS.length],
+                strokeWeight: 6,
+                strokeOpacity: 0.9
+              }
+            });
+            newRenderers.push(renderer);
+          }
+        });
       });
     });
 
@@ -93,7 +105,7 @@ const MapContent = ({ places, itinerary, userInput, selectedDay, selectedPlace, 
     return () => {
       newRenderers.forEach(renderer => renderer.setMap(null));
     };
-  }, [map, routesLib, places, itinerary, userInput, selectedDay, loading]);
+  }, [map, routesLib, placesLib, places, itinerary, userInput, selectedDay, loading]);
 
   const handleMarkerClick = (place: SearchResult) => {
     setSelectedPlace(place);
