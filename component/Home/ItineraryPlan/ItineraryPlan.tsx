@@ -23,7 +23,8 @@ const ItineraryPlan = ({ userInput }: ItineraryPlanProps) => {
           <div className='flex-1 min-h-125 lg:min-h-0 rounded-2xl overflow-hidden shadow-xl'>
             <CityMap 
               userInput={userInput}
-              places={places} 
+              places={places}
+              itinerary={itinerary}
               loading={loading}
               setItinerary={setItinerary}
               setPlaces={setPlaces}
