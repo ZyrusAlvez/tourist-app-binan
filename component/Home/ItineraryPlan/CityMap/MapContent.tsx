@@ -66,23 +66,43 @@ const MapContent = ({ places, itinerary, userInput, selectedDay, selectedPlace, 
       const isTransit = travelMode === 'TRANSIT';
       
       // Transit mode only supports origin and destination (no waypoints)
-      const waypoints = isTransit ? [] : dayPlaces.slice(1, -1).map(place => ({
-        location: place.location,
-        stopover: true
-      }));
+      if (isTransit && dayPlaces.length > 2) {
+        // For transit with multiple places, create separate routes
+        dayPlaces.slice(0, -1).forEach((place, i) => {
+          directionsService.route({
+            origin: place.location,
+            destination: dayPlaces[i + 1].location,
+            travelMode: google.maps.TravelMode.TRANSIT,
+          }, (result, status) => {
+            if (status === 'OK' && result) {
+              const renderer = new google.maps.DirectionsRenderer({
+                map,
+                directions: result,
+                suppressMarkers: true,
+                polylineOptions: {
+                  strokeColor: DAY_COLORS[dayIndex % DAY_COLORS.length],
+                  strokeWeight: 6,
+                  strokeOpacity: 0.9
+                }
+              });
+              newRenderers.push(renderer);
+            }
+          });
+        });
+      } else {
+        // For non-transit modes, use waypoints
+        const waypoints = dayPlaces.slice(1, -1).map(place => ({
+          location: place.location,
+          stopover: true
+        }));
 
-      // For transit with multiple places, create separate routes
-      const routeSegments = isTransit && dayPlaces.length > 2 
-        ? dayPlaces.slice(0, -1).map((place, i) => [place, dayPlaces[i + 1]])
-        : [[dayPlaces[0], dayPlaces[dayPlaces.length - 1]]];
-
-      routeSegments.forEach(([origin, destination]) => {
         directionsService.route({
-          origin: origin.location,
-          destination: destination.location,
-          waypoints: isTransit ? [] : waypoints,
+          origin: dayPlaces[0].location,
+          destination: dayPlaces[dayPlaces.length - 1].location,
+          waypoints,
           travelMode: google.maps.TravelMode[travelMode as keyof typeof google.maps.TravelMode],
         }, (result, status) => {
+          console.log(`Route status for ${travelMode}:`, status);
           if (status === 'OK' && result) {
             const renderer = new google.maps.DirectionsRenderer({
               map,
@@ -95,9 +115,32 @@ const MapContent = ({ places, itinerary, userInput, selectedDay, selectedPlace, 
               }
             });
             newRenderers.push(renderer);
+          } else if (status === 'ZERO_RESULTS' && travelMode === 'BICYCLING') {
+            // Fallback to WALKING if bicycling route not available
+            console.log('Bicycling route not available, falling back to walking');
+            directionsService.route({
+              origin: dayPlaces[0].location,
+              destination: dayPlaces[dayPlaces.length - 1].location,
+              waypoints,
+              travelMode: google.maps.TravelMode.WALKING,
+            }, (fallbackResult, fallbackStatus) => {
+              if (fallbackStatus === 'OK' && fallbackResult) {
+                const renderer = new google.maps.DirectionsRenderer({
+                  map,
+                  directions: fallbackResult,
+                  suppressMarkers: true,
+                  polylineOptions: {
+                    strokeColor: DAY_COLORS[dayIndex % DAY_COLORS.length],
+                    strokeWeight: 6,
+                    strokeOpacity: 0.9
+                  }
+                });
+                newRenderers.push(renderer);
+              }
+            });
           }
         });
-      });
+      }
     });
 
     setDirectionsRenderers(newRenderers);
