@@ -31,7 +31,7 @@ export default function GetTransportation({ transport, setTransport }: GetTransp
             <button
               key={mode.id}
               onClick={() => setTransport(mode.id)}
-              className={`relative p-4 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-200 group ${
+              className={`relative p-4 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-200 group cursor-pointer ${
                 isSelected
                   ? 'border-orange-400 bg-linear-to-br from-orange-50 to-amber-50 shadow-lg shadow-orange-500/20 scale-[1.02]'
                   : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-md active:scale-[0.98]'

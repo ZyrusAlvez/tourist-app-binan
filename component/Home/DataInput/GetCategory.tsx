@@ -43,7 +43,7 @@ export default function GetCategory({ categories, setCategories }: GetCategoryPr
             <button
               key={cat}
               onClick={() => toggleCategory(cat)}
-              className={`relative p-2 rounded-xl border-2 transition-all duration-200 group ${
+              className={`relative p-2 rounded-xl border-2 transition-all duration-200 group cursor-pointer ${
                 isSelected
                   ? 'border-orange-400 bg-linear-to-br from-orange-50 to-amber-50 shadow-md shadow-orange-500/20 scale-[1.02]'
                   : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm active:scale-[0.98]'
