@@ -41,7 +41,51 @@ const Dashboard = ({ itinerary, selectedDay, setSelectedDay }: DashboardProps) =
                   <div className='ml-auto text-xs text-gray-500'>✓ Selected</div>
                 )}
               </div>
-              <div className='text-xs md:text-sm text-gray-600 whitespace-pre-line leading-relaxed pl-10'>{plan}</div>
+              <div className='pl-10 space-y-2.5'>
+                {plan.split('\n').map((line, idx) => {
+                  const trimmedLine = line.trim();
+                  if (!trimmedLine) return null;
+                  
+                  const timeBlockMatch = trimmedLine.match(/^(Morning|Lunch|Afternoon|Evening|Dinner)\s*\(([^)]+)\)/i);
+                  const placeMatch = trimmedLine.match(/^\*\s*([^–\-]+)\s*[–\-]\s*(.+)$/);
+                  
+                  if (timeBlockMatch) {
+                    return (
+                      <div key={idx} className='flex items-center gap-2 mt-3 first:mt-0'>
+                        <div 
+                          className='px-2 py-0.5 rounded text-xs font-semibold text-white'
+                          style={{ backgroundColor: dayColor }}
+                        >
+                          {timeBlockMatch[2]}
+                        </div>
+                        <span className='text-xs font-semibold text-gray-700'>{timeBlockMatch[1]}</span>
+                      </div>
+                    );
+                  }
+                  
+                  if (placeMatch) {
+                    return (
+                      <div key={idx} className='flex gap-2 items-start group pl-2'>
+                        <div className='shrink-0 mt-1.5'>
+                          <div className='w-1.5 h-1.5 rounded-full' style={{ backgroundColor: dayColor }}></div>
+                        </div>
+                        <div className='flex-1'>
+                          <p className='text-sm font-semibold text-gray-800 group-hover:text-gray-900'>
+                            {placeMatch[1].trim()}
+                          </p>
+                          <p className='text-xs text-gray-600 mt-0.5'>{placeMatch[2].trim()}</p>
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <p key={idx} className='text-xs text-gray-600 leading-relaxed'>
+                      {trimmedLine.replace(/^\*\s*/, '')}
+                    </p>
+                  );
+                })}
+              </div>
             </div>
           );
         })}
