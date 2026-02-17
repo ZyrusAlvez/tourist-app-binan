@@ -65,14 +65,22 @@ const MapContent = ({ places, itinerary, userInput, selectedDay, selectedPlace, 
 
       const isTransit = travelMode === 'TRANSIT';
       
-      // Transit mode only supports origin and destination (no waypoints)
-      if (isTransit && dayPlaces.length > 2) {
-        // For transit with multiple places, create separate routes
+      // Transit mode: use driving for long distances, walking for short
+      if (isTransit) {
         dayPlaces.slice(0, -1).forEach((place, i) => {
+          const nextPlace = dayPlaces[i + 1];
+          const distance = google.maps.geometry.spherical.computeDistanceBetween(
+            new google.maps.LatLng(place.location.lat, place.location.lng),
+            new google.maps.LatLng(nextPlace.location.lat, nextPlace.location.lng)
+          );
+          
+          const isWalkable = distance < 1000; // Less than 1km = walkable
+          const mode = isWalkable ? google.maps.TravelMode.WALKING : google.maps.TravelMode.DRIVING;
+          
           directionsService.route({
             origin: place.location,
-            destination: dayPlaces[i + 1].location,
-            travelMode: google.maps.TravelMode.TRANSIT,
+            destination: nextPlace.location,
+            travelMode: mode,
           }, (result, status) => {
             if (status === 'OK' && result) {
               const renderer = new google.maps.DirectionsRenderer({
@@ -82,7 +90,19 @@ const MapContent = ({ places, itinerary, userInput, selectedDay, selectedPlace, 
                 polylineOptions: {
                   strokeColor: DAY_COLORS[dayIndex % DAY_COLORS.length],
                   strokeWeight: 6,
-                  strokeOpacity: 0.9
+                  strokeOpacity: 0.9,
+                  ...(isWalkable && {
+                    strokeOpacity: 0,
+                    icons: [{
+                      icon: {
+                        path: 'M 0,-1 0,1',
+                        strokeOpacity: 1,
+                        scale: 3
+                      },
+                      offset: '0',
+                      repeat: '15px'
+                    }]
+                  })
                 }
               });
               newRenderers.push(renderer);
