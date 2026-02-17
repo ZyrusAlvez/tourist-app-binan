@@ -34,9 +34,11 @@ interface CityMapProps {
   setItinerary: (itinerary: Record<number, string>) => void;
   setPlaces: (places: Record<string, SearchResult[]>) => void;
   setLoading: (loading: boolean) => void;
+  selectedPlace: SearchResult | null;
+  setSelectedPlace: (place: SearchResult | null) => void;
 }
 
-function MapWrapper({ userInput, places, itinerary, selectedDay, loading, setItinerary, setPlaces, setLoading }: CityMapProps) {
+function MapWrapper({ userInput, setItinerary, setPlaces, setLoading }: Pick<CityMapProps, 'userInput' | 'setItinerary' | 'setPlaces' | 'setLoading'>) {
   const map = useMap();
   const placesLib = useMapsLibrary('places');
 
@@ -54,7 +56,13 @@ function MapWrapper({ userInput, places, itinerary, selectedDay, loading, setIti
 }
 
 const CityMap = (props: CityMapProps) => {
-  const [selectedPlace, setSelectedPlace] = useState<SearchResult | null>(null);
+  const { selectedPlace, setSelectedPlace } = props;
+  const [localSelectedPlace, setLocalSelectedPlace] = useState<SearchResult | null>(null);
+
+  const handleLocalPlaceSelect = (place: SearchResult | null) => {
+    setSelectedPlace(null);
+    setLocalSelectedPlace(place);
+  };
 
   return (
     <div className='relative h-full w-full rounded-2xl overflow-hidden'>
@@ -64,22 +72,30 @@ const CityMap = (props: CityMapProps) => {
         disableDefaultUI={true}
         style={{ width: '100%', height: '100%' }}
       >
-        <MapWrapper {...props} />
+        <MapWrapper 
+          userInput={props.userInput}
+          setItinerary={props.setItinerary}
+          setPlaces={props.setPlaces}
+          setLoading={props.setLoading}
+        />
         <MapContent
           places={props.places}
           itinerary={props.itinerary}
           userInput={props.userInput}
           selectedDay={props.selectedDay}
-          selectedPlace={selectedPlace}
-          setSelectedPlace={setSelectedPlace}
+          selectedPlace={localSelectedPlace}
+          setSelectedPlace={handleLocalPlaceSelect}
           loading={props.loading}
         />
       </Map>
-      {selectedPlace && (
+      {(selectedPlace || localSelectedPlace) && (
         <div className='absolute top-4 left-4 bottom-4 z-10 animate-in slide-in-from-left duration-300'>
           <PlaceInfoPanel
-            place={selectedPlace}
-            onClose={() => setSelectedPlace(null)}
+            place={(selectedPlace || localSelectedPlace)!}
+            onClose={() => {
+              setSelectedPlace(null);
+              setLocalSelectedPlace(null);
+            }}
           />
         </div>
       )}

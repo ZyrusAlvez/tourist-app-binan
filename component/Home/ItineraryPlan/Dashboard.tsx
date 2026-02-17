@@ -1,14 +1,27 @@
 import React from 'react'
 import { DAY_COLORS } from './constants'
+import { SearchResult } from '@/services/searchService'
 
 interface DashboardProps {
   itinerary: Record<number, string>;
   loading: boolean;
   selectedDay: number | null;
   setSelectedDay: (day: number | null) => void;
+  places: Record<string, SearchResult[]>;
+  onPlaceClick: (place: SearchResult) => void;
 }
 
-const Dashboard = ({ itinerary, selectedDay, setSelectedDay }: DashboardProps) => {
+const Dashboard = ({ itinerary, selectedDay, setSelectedDay, places, onPlaceClick }: DashboardProps) => {
+  const findPlace = (placeName: string): SearchResult | null => {
+    for (const category of Object.values(places)) {
+      const found = category.find(p => 
+        p.displayName.toLowerCase() === placeName.toLowerCase() ||
+        p.displayName.toLowerCase().includes(placeName.toLowerCase())
+      );
+      if (found) return found;
+    }
+    return null;
+  };
   return (
     <div className='h-full bg-white flex flex-col'>
       <h2 className='text-lg md:text-xl font-semibold px-4 md:px-6 py-4 text-gray-800 sticky top-0 bg-white z-10'>Your Itinerary</h2>
@@ -64,13 +77,24 @@ const Dashboard = ({ itinerary, selectedDay, setSelectedDay }: DashboardProps) =
                   }
                   
                   if (placeMatch) {
+                    const place = findPlace(placeMatch[1].trim());
                     return (
                       <div key={idx} className='flex gap-2 items-start group pl-2'>
                         <div className='shrink-0 mt-1.5'>
                           <div className='w-1.5 h-1.5 rounded-full' style={{ backgroundColor: dayColor }}></div>
                         </div>
                         <div className='flex-1'>
-                          <p className='text-sm font-semibold text-gray-800 group-hover:text-gray-900'>
+                          <p 
+                            className={`text-sm font-semibold text-gray-800 group-hover:text-gray-900 ${
+                              place ? 'cursor-pointer hover:underline text-blue-600 hover:text-blue-700' : ''
+                            }`}
+                            onClick={(e) => {
+                              if (place) {
+                                e.stopPropagation();
+                                onPlaceClick(place);
+                              }
+                            }}
+                          >
                             {placeMatch[1].trim()}
                           </p>
                           <p className='text-xs text-gray-600 mt-0.5'>{placeMatch[2].trim()}</p>
